@@ -4,15 +4,38 @@
  */
 package senandika.UILayer;
 
-/**
- *
- * @author SAHABAT-IT
- */
-public class ActivitySuggestion extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ActivitySuggestion
-     */
+public class ActivitySuggestion extends javax.swing.JFrame {
+    
+    private String idActivity;
+    private String judul;
+    private String deskripsi;
+    private String kategori;
+
+    public ActivitySuggestion(String idActivity, String judul,
+                              String deskripsi, String kategori) {
+        this.idActivity = idActivity;
+        this.judul = judul;
+        this.deskripsi = deskripsi;
+        this.kategori = kategori;
+    }
+
+    public String getDeskripsi() {
+        return deskripsi;
+    }
+
+    public String getJudul() {
+        return judul;
+    }
+
+    public String getKategori() {
+        return kategori;
+    }
+
+    public String getIdActivity() {
+        return idActivity;
+    }
+    
     public ActivitySuggestion() {
         initComponents();
     }

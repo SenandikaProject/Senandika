@@ -4,10 +4,18 @@
  */
 package senandika.ServiceLayer;
 
-/**
- *
- * @author SAHABAT-IT
- */
+import java.util.ArrayList;
+import java.util.List;
+import senandika.UILayer.ActivitySuggestion;
+
 public class RecomendationService {
-    
+    private List<ActivitySuggestion> activities = new ArrayList<>();
+
+    public List<ActivitySuggestion> getRecommendation() {
+        return activities;
+    }
+
+    public void addActivity(ActivitySuggestion activity) {
+        activities.add(activity);
+    }
 }

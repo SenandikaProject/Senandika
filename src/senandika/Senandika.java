@@ -5,6 +5,7 @@
 package senandika;
 
 import senandika.UILayer.SplashScreen;
+import senandika.UILayer.WelcomeScreen;
 
 /**
  *
@@ -14,7 +15,7 @@ public class Senandika {
 
 
     public static void main(String[] args) {
-        SplashScreen splash = new SplashScreen();
+        WelcomeScreen splash = new WelcomeScreen();
         splash.setVisible(true);
     }
     
