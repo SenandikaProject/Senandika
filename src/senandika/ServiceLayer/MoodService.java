@@ -4,10 +4,34 @@
  */
 package senandika.ServiceLayer;
 
-/**
- *
- * @author SAHABAT-IT
- */
+// MoodService.java
+import java.util.ArrayList;
+import java.util.List;
+import senandika.UILayer.Mood;
+
 public class MoodService {
-    
+    private List<Mood> moods = new ArrayList<>();
+
+    public boolean addMood(Mood mood) {
+        moods.add(mood);
+        return true;
+    }
+
+    public List<Mood> getMoodHistory() {
+        return moods;
+    }
+
+    public double getAverageMood() {
+        if (moods.isEmpty()) {
+            return 0;
+        }
+
+        int total = 0;
+
+        for (Mood mood : moods) {
+            total += mood.getTingkatMood();
+        }
+
+        return (double) total / moods.size();
+    }
 }

@@ -4,10 +4,27 @@
  */
 package senandika.ServiceLayer;
 
+import java.util.ArrayList;
+import java.util.List;
+import senandika.UILayer.Journal;
+
 /**
  *
  * @author SAHABAT-IT
  */
 public class JournalService {
-    
+    private List<Journal> journals = new ArrayList<>();
+
+    public boolean addJournal(Journal journal) {
+        journals.add(journal);
+        return true;
+    }
+
+    public int calculateStreak() {
+        return journals.size();
+    }
+
+    public List<Journal> getUserJournal() {
+        return journals;
+    }
 }

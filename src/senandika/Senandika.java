@@ -4,6 +4,8 @@
  */
 package senandika;
 
+import senandika.UILayer.SplashScreen;
+
 /**
  *
  * @author SAHABAT-IT
@@ -12,7 +14,8 @@ public class Senandika {
 
 
     public static void main(String[] args) {
-        // TODO code application logic here
+        SplashScreen splash = new SplashScreen();
+        splash.setVisible(true);
     }
     
 }
