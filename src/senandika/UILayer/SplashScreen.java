@@ -15,6 +15,15 @@ public class SplashScreen extends javax.swing.JFrame {
      */
     public SplashScreen() {
         initComponents();
+
+        javax.swing.Timer timer = new javax.swing.Timer(3000, e -> {
+            WelcomeScreen Screen = new WelcomeScreen();
+            Screen.setVisible(true);
+            dispose();
+    });
+
+    timer.setRepeats(false);
+    timer.start();
     }
 
     /**
@@ -31,28 +40,15 @@ public class SplashScreen extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(246, 255, 248));
+        setPreferredSize(new java.awt.Dimension(390, 640));
 
         Slide1.setBackground(new java.awt.Color(246, 255, 248));
         Slide1.setPreferredSize(new java.awt.Dimension(816, 546));
+        Slide1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/LogoText150.png"))); // NOI18N
-
-        javax.swing.GroupLayout Slide1Layout = new javax.swing.GroupLayout(Slide1);
-        Slide1.setLayout(Slide1Layout);
-        Slide1Layout.setHorizontalGroup(
-            Slide1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Slide1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        Slide1Layout.setVerticalGroup(
-            Slide1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Slide1Layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 205, Short.MAX_VALUE))
-        );
+        Slide1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 0, 368, 590));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -64,9 +60,7 @@ public class SplashScreen extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(Slide1, javax.swing.GroupLayout.PREFERRED_SIZE, 845, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(Slide1, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();

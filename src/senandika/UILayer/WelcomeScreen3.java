@@ -8,12 +8,12 @@ package senandika.UILayer;
  *
  * @author SAHABAT-IT
  */
-public class WelcomeScreen extends javax.swing.JFrame {
+public class WelcomeScreen3 extends javax.swing.JFrame {
 
     /**
      * Creates new form WelcomeScreen
      */
-    public WelcomeScreen() {
+    public WelcomeScreen3() {
         initComponents();
     }
 
@@ -27,8 +27,9 @@ public class WelcomeScreen extends javax.swing.JFrame {
     private void initComponents() {
 
         Slide1 = new javax.swing.JPanel();
-        NextSlide3 = new javax.swing.JLabel();
-        NextSlide2 = new javax.swing.JLabel();
+        MulaiSekarang = new javax.swing.JLabel();
+        PreviousSlide2 = new javax.swing.JLabel();
+        PreviousSlide1 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -37,23 +38,31 @@ public class WelcomeScreen extends javax.swing.JFrame {
         Slide1.setPreferredSize(new java.awt.Dimension(816, 546));
         Slide1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        NextSlide3.setText("                    ");
-        NextSlide3.addMouseListener(new java.awt.event.MouseAdapter() {
+        MulaiSekarang.setText(" ");
+        MulaiSekarang.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                NextSlide3MouseClicked(evt);
+                MulaiSekarangMouseClicked(evt);
             }
         });
-        Slide1.add(NextSlide3, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 500, 80, 20));
+        Slide1.add(MulaiSekarang, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 410, 230, 60));
 
-        NextSlide2.setText("                    ");
-        NextSlide2.addMouseListener(new java.awt.event.MouseAdapter() {
+        PreviousSlide2.setText("                    ");
+        PreviousSlide2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                NextSlide2MouseClicked(evt);
+                PreviousSlide2MouseClicked(evt);
             }
         });
-        Slide1.add(NextSlide2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 500, 80, 20));
+        Slide1.add(PreviousSlide2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 500, 80, 20));
 
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/WelcomeFlow1.png"))); // NOI18N
+        PreviousSlide1.setText("                    ");
+        PreviousSlide1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                PreviousSlide1MouseClicked(evt);
+            }
+        });
+        Slide1.add(PreviousSlide1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 500, 80, 20));
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/WelcomeFlow3.png"))); // NOI18N
         Slide1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -70,17 +79,21 @@ public class WelcomeScreen extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void NextSlide2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NextSlide2MouseClicked
+    private void PreviousSlide1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PreviousSlide1MouseClicked
+        WelcomeScreen Screen1 = new WelcomeScreen();
+            Screen1.setVisible(true);
+            this.dispose();
+    }//GEN-LAST:event_PreviousSlide1MouseClicked
+
+    private void PreviousSlide2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PreviousSlide2MouseClicked
         WelcomeScreen2 Screen2 = new WelcomeScreen2();
             Screen2.setVisible(true);
             this.dispose();
-    }//GEN-LAST:event_NextSlide2MouseClicked
+    }//GEN-LAST:event_PreviousSlide2MouseClicked
 
-    private void NextSlide3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NextSlide3MouseClicked
-        WelcomeScreen3 Screen3 = new WelcomeScreen3();
-            Screen3.setVisible(true);
-            this.dispose();
-    }//GEN-LAST:event_NextSlide3MouseClicked
+    private void MulaiSekarangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MulaiSekarangMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MulaiSekarangMouseClicked
 
     /**
      * @param args the command line arguments
@@ -99,27 +112,31 @@ public class WelcomeScreen extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WelcomeScreen3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WelcomeScreen3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WelcomeScreen3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(WelcomeScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(WelcomeScreen3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new WelcomeScreen().setVisible(true);
+                new WelcomeScreen3().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel NextSlide2;
-    private javax.swing.JLabel NextSlide3;
+    private javax.swing.JLabel MulaiSekarang;
+    private javax.swing.JLabel PreviousSlide1;
+    private javax.swing.JLabel PreviousSlide2;
     private javax.swing.JPanel Slide1;
     private javax.swing.JLabel jLabel8;
     // End of variables declaration//GEN-END:variables
