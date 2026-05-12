@@ -4,6 +4,8 @@
  */
 package senandika.UILayer;
 
+import javax.swing.Timer;
+
 /**
  *
  * @author SAHABAT-IT
@@ -14,16 +16,16 @@ public class SplashScreen extends javax.swing.JFrame {
      * Creates new form SplashScreen
      */
     public SplashScreen() {
-        initComponents();
-
-        javax.swing.Timer timer = new javax.swing.Timer(3000, e -> {
+    initComponents();
+    setLocationRelativeTo(null);
+    Timer timer = new Timer(2000, e -> {
             WelcomeScreen Screen = new WelcomeScreen();
             Screen.setVisible(true);
             dispose();
     });
 
-    timer.setRepeats(false);
-    timer.start();
+        timer.setRepeats(false);
+        timer.start();
     }
 
     /**

@@ -4,6 +4,8 @@
  */
 package senandika.UILayer;
 
+import javax.swing.Timer;
+
 /**
  *
  * @author SAHABAT-IT
@@ -15,6 +17,15 @@ public class WelcomeScreen2 extends javax.swing.JFrame {
      */
     public WelcomeScreen2() {
         initComponents();
+        setLocationRelativeTo(null);
+        Timer timer = new Timer(5000, e -> {
+                WelcomeScreen3 wScreen3 = new WelcomeScreen3();
+                wScreen3.setVisible(true);
+                dispose();
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
 
     /**
@@ -71,15 +82,15 @@ public class WelcomeScreen2 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PreviousSlide1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PreviousSlide1MouseClicked
+        dispose();
         WelcomeScreen Screen1 = new WelcomeScreen();
-            Screen1.setVisible(true);
-            this.dispose();
+        Screen1.setVisible(true);
     }//GEN-LAST:event_PreviousSlide1MouseClicked
 
     private void NextSlide3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NextSlide3MouseClicked
+        dispose();
         WelcomeScreen3 Screen3 = new WelcomeScreen3();
-            Screen3.setVisible(true);
-            this.dispose();
+        Screen3.setVisible(true);
     }//GEN-LAST:event_NextSlide3MouseClicked
 
     /**
