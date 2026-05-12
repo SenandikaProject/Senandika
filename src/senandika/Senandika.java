@@ -4,8 +4,8 @@
  */
 package senandika;
 
-import senandika.UILayer.SplashScreen;
-import senandika.UILayer.WelcomeScreen;
+import senandika.UILayer.WelcomeScreen.SplashScreen;
+import senandika.UILayer.WelcomeScreen.WelcomeScreen1;
 
 /**
  *

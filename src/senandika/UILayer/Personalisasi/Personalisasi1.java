@@ -2,30 +2,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package senandika.UILayer;
-
-import javax.swing.Timer;
+package senandika.UILayer.Personalisasi;
 
 /**
  *
- * @author SAHABAT-IT
+ * @author TANIA ALYANA
  */
-public class SplashScreen extends javax.swing.JFrame {
+public class Personalisasi1 extends javax.swing.JFrame {
+    
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Personalisasi1.class.getName());
 
     /**
-     * Creates new form SplashScreen
+     * Creates new form Personalisasi1
      */
-    public SplashScreen() {
-    initComponents();
-    setLocationRelativeTo(null);
-    Timer timer = new Timer(2000, e -> {
-            WelcomeScreen Screen = new WelcomeScreen();
-            Screen.setVisible(true);
-            dispose();
-    });
-
-        timer.setRepeats(false);
-        timer.start();
+    public Personalisasi1() {
+        initComponents();
     }
 
     /**
@@ -38,31 +29,30 @@ public class SplashScreen extends javax.swing.JFrame {
     private void initComponents() {
 
         Slide1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(246, 255, 248));
-        setPreferredSize(new java.awt.Dimension(390, 640));
 
         Slide1.setBackground(new java.awt.Color(246, 255, 248));
         Slide1.setPreferredSize(new java.awt.Dimension(816, 546));
         Slide1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/LogoText150.png"))); // NOI18N
-        Slide1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 0, 368, 590));
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/Personalisasi1.png"))); // NOI18N
+        Slide1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Slide1, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Slide1, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Slide1, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(Slide1, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -84,27 +74,17 @@ public class SplashScreen extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SplashScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SplashScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SplashScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SplashScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new SplashScreen().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new Personalisasi1().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
