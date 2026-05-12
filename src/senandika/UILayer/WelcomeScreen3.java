@@ -15,6 +15,7 @@ public class WelcomeScreen3 extends javax.swing.JFrame {
      */
     public WelcomeScreen3() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -80,19 +81,21 @@ public class WelcomeScreen3 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PreviousSlide1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PreviousSlide1MouseClicked
+        dispose();
         WelcomeScreen Screen1 = new WelcomeScreen();
-            Screen1.setVisible(true);
-            this.dispose();
+        Screen1.setVisible(true);
     }//GEN-LAST:event_PreviousSlide1MouseClicked
 
     private void PreviousSlide2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_PreviousSlide2MouseClicked
+        dispose();
         WelcomeScreen2 Screen2 = new WelcomeScreen2();
-            Screen2.setVisible(true);
-            this.dispose();
+        Screen2.setVisible(true);
     }//GEN-LAST:event_PreviousSlide2MouseClicked
 
     private void MulaiSekarangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MulaiSekarangMouseClicked
-        // TODO add your handling code here:
+        Login signin = new Login();
+        signin.setVisible(true);
+        dispose();
     }//GEN-LAST:event_MulaiSekarangMouseClicked
 
     /**
