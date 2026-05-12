@@ -4,7 +4,7 @@
  */
 package senandika.UILayer.WelcomeScreen;
 
-import senandika.UILayer.Login;
+import senandika.UILayer.Autentikasi.Login;
 
 /**
  *
