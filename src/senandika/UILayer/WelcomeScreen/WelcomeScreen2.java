@@ -18,7 +18,7 @@ public class WelcomeScreen2 extends javax.swing.JFrame {
     public WelcomeScreen2() {
         initComponents();
         setLocationRelativeTo(null);
-        Timer timer = new Timer(5000, e -> {
+        Timer timer = new Timer(3000, e -> {
                 WelcomeScreen3 wScreen3 = new WelcomeScreen3();
                 wScreen3.setVisible(true);
                 dispose();

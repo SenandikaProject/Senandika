@@ -4,17 +4,23 @@
  */
 package senandika.UILayer.Autentikasi;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import javax.swing.JOptionPane;
+import senandika.ServiceLayer.AuthService;
+import senandika.UILayer.Personalisasi.Personalisasi1;
+
 /**
  *
  * @author SAHABAT-IT
  */
 public class Register extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Register
-     */
+    private boolean passwordVisible = false;
     public Register() {
         initComponents();
+        setupPlaceholder();
+        setupPasswordPlaceholder();
         setLocationRelativeTo(null);
     }
 
@@ -137,11 +143,158 @@ public class Register extends javax.swing.JFrame {
     }//GEN-LAST:event_createPwActionPerformed
 
     private void hintCreatePwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hintCreatePwActionPerformed
-        // TODO add your handling code here:
+        if (passwordVisible) {
+
+            createPw.setEchoChar('•');
+
+            passwordVisible = false;
+
+        } else {
+
+            createPw.setEchoChar((char) 0);
+
+            passwordVisible = true;
+
+        }
     }//GEN-LAST:event_hintCreatePwActionPerformed
 
     private void btnRegisterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegisterMouseClicked
-        // TODO add your handling code here:
+        String email = inputEmail.getText().trim();
+
+        String password =
+                new String(createPw.getPassword());
+
+        String confirmPassword =
+                new String(confirmPw.getPassword());
+
+        // VALIDASI EMAIL
+        if (email.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Email tidak boleh kosong!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        // VALIDASI FORMAT EMAIL
+        if (!email.contains("@")) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Format email tidak valid!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        // VALIDASI PASSWORD
+        if (password.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Password tidak boleh kosong!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        // VALIDASI PANJANG PASSWORD
+        if (password.length() < 6) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Password minimal 6 karakter!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        // VALIDASI KONFIRMASI PASSWORD
+        if (!password.equals(confirmPassword)) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Konfirmasi password tidak cocok!",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
+        try {
+
+            btnRegister.setEnabled(false);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Sedang membuat akun...",
+                    "Informasi",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            AuthService authService = new AuthService();
+
+            String response =
+                    authService.register(email, password);
+
+            JsonObject jsonObject =
+                    JsonParser.parseString(response)
+                            .getAsJsonObject();
+
+            boolean success =
+                    jsonObject.get("success").getAsBoolean();
+
+            String message =
+                    jsonObject.get("message").getAsString();
+
+            // REGISTER BERHASIL
+            if (success) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        message,
+                        "Registrasi Berhasil",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                // KEMBALI KE LOGIN
+                Login signin = new Login();
+                signin.setVisible(true);
+                dispose();
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        message,
+                        "Registrasi Gagal",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Terjadi kesalahan:\n" + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+        } finally {
+            btnRegister.setEnabled(true);
+        }
     }//GEN-LAST:event_btnRegisterMouseClicked
 
     private void loginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginMouseClicked
@@ -155,12 +308,117 @@ public class Register extends javax.swing.JFrame {
     }//GEN-LAST:event_confirmPwActionPerformed
 
     private void hintConfirmPwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hintConfirmPwActionPerformed
-        // TODO add your handling code here:
+        if (passwordVisible) {
+
+            confirmPw.setEchoChar('•');
+
+            passwordVisible = false;
+
+        } else {
+
+            confirmPw.setEchoChar((char) 0);
+
+            passwordVisible = true;
+
+        }
     }//GEN-LAST:event_hintConfirmPwActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void setupPlaceholder() {
+        // EMAIL
+        inputEmail.setText("Masukkan email");
+
+        inputEmail.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+
+                if (inputEmail.getText().equals("Masukkan email")) {
+
+                    inputEmail.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+
+                if (inputEmail.getText().isEmpty()) {
+
+                    inputEmail.setText("Masukkan email");
+                }
+            }
+        });
+    }
+    
+    private void setupPasswordPlaceholder() {
+        createPw.setText("Masukkan password"); 
+        confirmPw.setText("Konfirmasi password anda"); 
+
+        createPw.setEchoChar((char) 0);
+        confirmPw.setEchoChar((char) 0);
+
+        createPw.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(createPw.getPassword());
+
+                if (password.equals("Masukkan password")) {
+
+                    createPw.setText("");
+
+                    createPw.setEchoChar('•');
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(createPw.getPassword());
+
+                if (password.isEmpty()) {
+
+                    createPw.setText("Masukkan password");
+
+                    createPw.setEchoChar((char) 0);
+                }
+            }
+        });
+        
+        confirmPw.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(confirmPw.getPassword());
+
+                if (password.equals("Konfirmasi password anda")) {
+
+                    confirmPw.setText("");
+
+                    confirmPw.setEchoChar('•');
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(confirmPw.getPassword());
+
+                if (password.isEmpty()) {
+
+                    confirmPw.setText("Konfirmasi password anda");
+
+                    confirmPw.setEchoChar((char) 0);
+                }
+            }
+        });
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

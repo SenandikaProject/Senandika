@@ -4,19 +4,20 @@
  */
 package senandika.UILayer.Autentikasi;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import javax.swing.JOptionPane;
+import senandika.ServiceLayer.AuthService;
+import senandika.ServiceLayer.Session;
 import senandika.UILayer.Autentikasi.Login;
 
-/**
- *
- * @author SAHABAT-IT
- */
+
 public class ForgotPassword extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ForgotPassword
-     */
+    private boolean passwordVisible = false;
     public ForgotPassword() {
         initComponents();
+        setupPasswordPlaceholder();
         setLocationRelativeTo(null);
     }
 
@@ -123,11 +124,114 @@ public class ForgotPassword extends javax.swing.JFrame {
     }//GEN-LAST:event_confirmNewPwActionPerformed
 
     private void hintNewConfirmPwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hintNewConfirmPwActionPerformed
-        // TODO add your handling code here:
+        if (passwordVisible) {
+
+            confirmNewPw.setEchoChar('•');
+
+            passwordVisible = false;
+
+        } else {
+
+            confirmNewPw.setEchoChar((char) 0);
+
+            passwordVisible = true;
+
+        }
     }//GEN-LAST:event_hintNewConfirmPwActionPerformed
 
     private void btnFogotPwMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnFogotPwMouseClicked
-        // TODO add your handling code here:
+    String password =
+            new String(inputNewPw.getPassword());
+
+    String confirmPassword =
+            new String(confirmNewPw.getPassword());
+
+    // VALIDASI
+    if (password.isEmpty()) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Password baru tidak boleh kosong!"
+        );
+
+        return;
+    }
+
+    if (password.length() < 6) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Password minimal 6 karakter!"
+        );
+
+        return;
+    }
+
+    if (!password.equals(confirmPassword)) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Konfirmasi password tidak cocok!"
+        );
+
+        return;
+    }
+
+    try {
+
+        AuthService authService =
+                new AuthService();
+
+        String response =
+                authService.resetPassword(
+                        Session.RESET_EMAIL,
+                        password
+                );
+
+        JsonObject jsonObject =
+                JsonParser.parseString(response)
+                        .getAsJsonObject();
+
+        boolean success =
+                jsonObject.get("success")
+                        .getAsBoolean();
+
+        String message =
+                jsonObject.get("message")
+                        .getAsString();
+
+        if (success) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    message,
+                    "Berhasil",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            Login login = new Login();
+
+            login.setVisible(true);
+
+            this.dispose();
+
+        } else {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    message,
+                    "Gagal",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+    } catch (Exception e) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                e.getMessage()
+        );
+    }
     }//GEN-LAST:event_btnFogotPwMouseClicked
 
     private void cancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelMouseClicked
@@ -141,12 +245,90 @@ public class ForgotPassword extends javax.swing.JFrame {
     }//GEN-LAST:event_inputNewPwActionPerformed
 
     private void hintNewPwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hintNewPwActionPerformed
-        // TODO add your handling code here:
+        if (passwordVisible) {
+
+            inputNewPw.setEchoChar('•');
+
+            passwordVisible = false;
+
+        } else {
+
+            inputNewPw.setEchoChar((char) 0);
+
+            passwordVisible = true;
+
+        }
     }//GEN-LAST:event_hintNewPwActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void setupPasswordPlaceholder() {
+        inputNewPw.setText("Masukkan password baru"); 
+        confirmNewPw.setText("Konfirmasi password anda"); 
+
+        inputNewPw.setEchoChar((char) 0);
+        confirmNewPw.setEchoChar((char) 0);
+
+        inputNewPw.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(inputNewPw.getPassword());
+
+                if (password.equals("Masukkan password baru")) {
+
+                    inputNewPw.setText("");
+
+                    inputNewPw.setEchoChar('•');
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(inputNewPw.getPassword());
+
+                if (password.isEmpty()) {
+
+                    inputNewPw.setText("Masukkan password baru");
+
+                    inputNewPw.setEchoChar((char) 0);
+                }
+            }
+        });
+        
+        confirmNewPw.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(confirmNewPw.getPassword());
+
+                if (password.equals("Konfirmasi password anda")) {
+
+                    confirmNewPw.setText("");
+
+                    confirmNewPw.setEchoChar('•');
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+
+                String password =
+                        String.valueOf(confirmNewPw.getPassword());
+
+                if (password.isEmpty()) {
+
+                    confirmNewPw.setText("Konfirmasi password anda");
+                    confirmNewPw.setEchoChar((char) 0);
+                }
+            }
+        });
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

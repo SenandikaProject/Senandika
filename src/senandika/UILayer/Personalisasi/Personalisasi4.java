@@ -12,11 +12,10 @@ public class Personalisasi4 extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Personalisasi4.class.getName());
 
-    /**
-     * Creates new form Personalisasi1
-     */
+    
     public Personalisasi4() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
