@@ -64,7 +64,7 @@ public class WelcomeScreen2 extends javax.swing.JFrame {
         });
         Slide1.add(PreviousSlide1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 500, 80, 20));
 
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/WelcomeFlow2.png"))); // NOI18N
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/halaman/welcome-flow/WelcomeFlow2.png"))); // NOI18N
         Slide1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

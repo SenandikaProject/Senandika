@@ -72,7 +72,7 @@ public class Register extends javax.swing.JFrame {
         Slide1.add(createPw, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 300, 230, 30));
 
         hintCreatePw.setBackground(new java.awt.Color(255, 255, 248));
-        hintCreatePw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/hintPassword.png"))); // NOI18N
+        hintCreatePw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/eyePassword/hintPassword.png"))); // NOI18N
         hintCreatePw.setBorder(null);
         hintCreatePw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -107,7 +107,7 @@ public class Register extends javax.swing.JFrame {
         Slide1.add(confirmPw, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 370, 230, 30));
 
         hintConfirmPw.setBackground(new java.awt.Color(255, 255, 248));
-        hintConfirmPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/hintPassword.png"))); // NOI18N
+        hintConfirmPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/eyePassword/hintPassword.png"))); // NOI18N
         hintConfirmPw.setBorder(null);
         hintConfirmPw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -117,7 +117,7 @@ public class Register extends javax.swing.JFrame {
         Slide1.add(hintConfirmPw, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 370, -1, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/Register.png"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/halaman/autentikasi/Register.png"))); // NOI18N
         Slide1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 640));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

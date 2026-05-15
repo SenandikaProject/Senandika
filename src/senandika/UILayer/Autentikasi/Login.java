@@ -72,7 +72,7 @@ public class Login extends javax.swing.JFrame {
         Slide1.add(inputPw, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 320, 230, 30));
 
         hintPw.setBackground(new java.awt.Color(255, 255, 248));
-        hintPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/hintPassword.png"))); // NOI18N
+        hintPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/eyePassword/hintPassword.png"))); // NOI18N
         hintPw.setBorder(null);
         hintPw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,7 +103,7 @@ public class Login extends javax.swing.JFrame {
         Slide1.add(forgotPw1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 380, 120, 20));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/Login.png"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/halaman/autentikasi/Login.png"))); // NOI18N
         Slide1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 640));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -297,7 +297,7 @@ public class Login extends javax.swing.JFrame {
     if (!email.contains("@")) {
 
         JOptionPane.showMessageDialog(
-                this,
+                this,       
                 "Format email tidak valid!",
                 "Peringatan",
                 JOptionPane.WARNING_MESSAGE

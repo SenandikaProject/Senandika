@@ -5,8 +5,8 @@
 package senandika;
 
 import senandika.UILayer.Autentikasi.Login;
-import senandika.UILayer.WelcomeScreen.SplashScreen;
-import senandika.UILayer.WelcomeScreen.WelcomeScreen1;
+import senandika.UILayer.Personalisasi.Personalisasi4;
+
 
 /**
  *

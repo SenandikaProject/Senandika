@@ -4,16 +4,17 @@
  */
 package senandika.UILayer.Personalisasi;
 
+import javax.swing.JOptionPane;
 import senandika.DataLayer.OnboardingData;
+import senandika.ServiceLayer.ProfileService;
 
 /**
  *
  * @author SAHABAT-IT
  */
-public class Personalisasi1 extends javax.swing.JFrame {
+public class Personalisasi5 extends javax.swing.JFrame {
 
-    
-    public Personalisasi1() {
+    public Personalisasi5() {
         initComponents();
         setLocationRelativeTo(null);
     }
@@ -28,8 +29,9 @@ public class Personalisasi1 extends javax.swing.JFrame {
     private void initComponents() {
 
         Slide1 = new javax.swing.JPanel();
-        inputUsername = new javax.swing.JTextField();
+        btnPrev = new javax.swing.JLabel();
         btnNext = new javax.swing.JLabel();
+        favActivity = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -38,15 +40,12 @@ public class Personalisasi1 extends javax.swing.JFrame {
         Slide1.setPreferredSize(new java.awt.Dimension(816, 546));
         Slide1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        inputUsername.setBackground(new java.awt.Color(246, 255, 248));
-        inputUsername.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        inputUsername.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(246, 255, 248)));
-        inputUsername.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inputUsernameActionPerformed(evt);
+        btnPrev.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnPrevMouseClicked(evt);
             }
         });
-        Slide1.add(inputUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 230, 170, 20));
+        Slide1.add(btnPrev, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, 30, 20));
 
         btnNext.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -55,7 +54,18 @@ public class Personalisasi1 extends javax.swing.JFrame {
         });
         Slide1.add(btnNext, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 290, 30, 20));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/halaman/personalisasi/Personalisasi1.png"))); // NOI18N
+        favActivity.setBackground(new java.awt.Color(246, 255, 248));
+        favActivity.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        favActivity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Salah Satu", "Mendengarkan musik", "Olahraga", "Menonton film", "Bermain game", "Membaca buku", "Meditasi", "Jalan-jalan", " " }));
+        favActivity.setBorder(null);
+        favActivity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                favActivityActionPerformed(evt);
+            }
+        });
+        Slide1.add(favActivity, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 230, 160, 20));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/halaman/personalisasi/Personalisasi5.png"))); // NOI18N
         Slide1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -76,20 +86,60 @@ public class Personalisasi1 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void inputUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputUsernameActionPerformed
+    private void btnPrevMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPrevMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_inputUsernameActionPerformed
+    }//GEN-LAST:event_btnPrevMouseClicked
 
     private void btnNextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNextMouseClicked
-        String username = inputUsername.getText();
+         String activity = favActivity.getSelectedItem().toString();
 
-        OnboardingData.username = username;
+        OnboardingData.favoriteActivity =
+                activity;
 
-        Personalisasi2 p2 = new Personalisasi2();
-            p2.setVisible(true);
-            dispose();
+        try {
 
+            ProfileService profileService =
+                    new ProfileService();
+
+            String response =
+                    profileService.setupProfile(
+
+                            OnboardingData.username,
+
+                            OnboardingData.fullName,
+
+                            OnboardingData.gender,
+
+                            OnboardingData.stressLevel,
+
+                            OnboardingData.favoriteActivity
+                    );
+
+            System.out.println(response);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Personalisasi berhasil disimpan"
+            );
+
+            PersonalisasiFinish pFinish = new PersonalisasiFinish();
+
+            pFinish.setVisible(true);
+
+            this.dispose();
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage()
+            );
+        }
     }//GEN-LAST:event_btnNextMouseClicked
+
+    private void favActivityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_favActivityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_favActivityActionPerformed
 
     /**
      * @param args the command line arguments
@@ -108,21 +158,35 @@ public class Personalisasi1 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Personalisasi1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Personalisasi5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Personalisasi1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Personalisasi5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Personalisasi1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Personalisasi5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Personalisasi1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Personalisasi5.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Personalisasi1().setVisible(true);
+                new Personalisasi5().setVisible(true);
             }
         });
     }
@@ -130,7 +194,8 @@ public class Personalisasi1 extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
     private javax.swing.JLabel btnNext;
-    private javax.swing.JTextField inputUsername;
+    private javax.swing.JLabel btnPrev;
+    private javax.swing.JComboBox<String> favActivity;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }

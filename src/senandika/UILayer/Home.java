@@ -6,14 +6,12 @@ package senandika.UILayer;
 
 /**
  *
- * @author TANIA ALYANA
+ * @author SAHABAT-IT
  */
 public class Home extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Home.class.getName());
 
     /**
-     * Creates new form Home
+     * Creates new form Dashboard
      */
     public Home() {
         initComponents();
@@ -30,39 +28,48 @@ public class Home extends javax.swing.JFrame {
     private void initComponents() {
 
         Slide1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jurnal_nav = new javax.swing.JLabel();
+        profil_nav = new javax.swing.JLabel();
+        mood_nav = new javax.swing.JLabel();
+        navbar = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         Slide1.setBackground(new java.awt.Color(246, 255, 248));
         Slide1.setPreferredSize(new java.awt.Dimension(816, 546));
+        Slide1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("HALAMAN HOME");
+        jurnal_nav.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jurnal_navMouseClicked(evt);
+            }
+        });
+        Slide1.add(jurnal_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 570, 60, 50));
 
-        javax.swing.GroupLayout Slide1Layout = new javax.swing.GroupLayout(Slide1);
-        Slide1.setLayout(Slide1Layout);
-        Slide1Layout.setHorizontalGroup(
-            Slide1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Slide1Layout.createSequentialGroup()
-                .addGap(143, 143, 143)
-                .addComponent(jLabel1)
-                .addContainerGap(157, Short.MAX_VALUE))
-        );
-        Slide1Layout.setVerticalGroup(
-            Slide1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(Slide1Layout.createSequentialGroup()
-                .addGap(212, 212, 212)
-                .addComponent(jLabel1)
-                .addContainerGap(412, Short.MAX_VALUE))
-        );
+        profil_nav.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                profil_navMouseClicked(evt);
+            }
+        });
+        Slide1.add(profil_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 570, 60, 50));
+
+        mood_nav.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mood_navMouseClicked(evt);
+            }
+        });
+        Slide1.add(mood_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 570, 60, 50));
+
+        navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-home.png"))); // NOI18N
+        Slide1.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 538, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Slide1, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                .addGap(0, 3, Short.MAX_VALUE))
+                .addComponent(Slide1, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -73,6 +80,24 @@ public class Home extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jurnal_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jurnal_navMouseClicked
+        Journal jurnal = new Journal();
+        jurnal.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jurnal_navMouseClicked
+
+    private void profil_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profil_navMouseClicked
+        Profile profil = new Profile();
+        profil.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_profil_navMouseClicked
+
+    private void mood_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mood_navMouseClicked
+        Mood mood = new Mood();
+        mood.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_mood_navMouseClicked
 
     /**
      * @param args the command line arguments
@@ -90,17 +115,31 @@ public class Home extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Home.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Home.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Home.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Home.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Home().setVisible(true));
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Home().setVisible(true);
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jurnal_nav;
+    private javax.swing.JLabel mood_nav;
+    private javax.swing.JLabel navbar;
+    private javax.swing.JLabel profil_nav;
     // End of variables declaration//GEN-END:variables
 }

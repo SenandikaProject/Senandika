@@ -57,7 +57,7 @@ public class ForgotPassword extends javax.swing.JFrame {
         Slide1.add(confirmNewPw, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 340, 230, 30));
 
         hintNewConfirmPw.setBackground(new java.awt.Color(255, 255, 248));
-        hintNewConfirmPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/hintPassword.png"))); // NOI18N
+        hintNewConfirmPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/eyePassword/hintPassword.png"))); // NOI18N
         hintNewConfirmPw.setBorder(null);
         hintNewConfirmPw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -78,7 +78,7 @@ public class ForgotPassword extends javax.swing.JFrame {
         Slide1.add(inputNewPw, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 270, 230, 30));
 
         hintNewPw.setBackground(new java.awt.Color(255, 255, 248));
-        hintNewPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/hintPassword.png"))); // NOI18N
+        hintNewPw.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/eyePassword/hintPassword.png"))); // NOI18N
         hintNewPw.setBorder(null);
         hintNewPw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,7 +102,7 @@ public class ForgotPassword extends javax.swing.JFrame {
         Slide1.add(cancel, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, 70, 20));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/Forgot Password .png"))); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/halaman/autentikasi/Forgot Password .png"))); // NOI18N
         Slide1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 640));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

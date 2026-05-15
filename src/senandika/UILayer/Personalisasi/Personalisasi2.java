@@ -4,19 +4,17 @@
  */
 package senandika.UILayer.Personalisasi;
 
+import senandika.DataLayer.OnboardingData;
+
 /**
  *
- * @author TANIA ALYANA
+ * @author SAHABAT-IT
  */
 public class Personalisasi2 extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Personalisasi2.class.getName());
 
-    /**
-     * Creates new form Personalisasi1
-     */
     public Personalisasi2() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -29,6 +27,9 @@ public class Personalisasi2 extends javax.swing.JFrame {
     private void initComponents() {
 
         Slide1 = new javax.swing.JPanel();
+        inputFullName = new javax.swing.JTextField();
+        btnPrev = new javax.swing.JLabel();
+        btnNext = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -37,8 +38,31 @@ public class Personalisasi2 extends javax.swing.JFrame {
         Slide1.setPreferredSize(new java.awt.Dimension(816, 546));
         Slide1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/Personalisasi2.png"))); // NOI18N
+        inputFullName.setBackground(new java.awt.Color(246, 255, 248));
+        inputFullName.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        inputFullName.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(246, 255, 248)));
+        inputFullName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputFullNameActionPerformed(evt);
+            }
+        });
+        Slide1.add(inputFullName, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 230, 170, 20));
+
+        btnPrev.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnPrevMouseClicked(evt);
+            }
+        });
+        Slide1.add(btnPrev, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, 30, 20));
+
+        btnNext.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnNextMouseClicked(evt);
+            }
+        });
+        Slide1.add(btnNext, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 290, 30, 20));
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/halaman/personalisasi/Personalisasi2.png"))); // NOI18N
         Slide1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -59,6 +83,26 @@ public class Personalisasi2 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void inputFullNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputFullNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inputFullNameActionPerformed
+
+    private void btnPrevMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPrevMouseClicked
+        Personalisasi1 p1 = new Personalisasi1();
+            p1.setVisible(true);
+            dispose();
+    }//GEN-LAST:event_btnPrevMouseClicked
+
+    private void btnNextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnNextMouseClicked
+        String fullName = inputFullName.getText();
+
+        OnboardingData.fullName = fullName ;
+
+        Personalisasi3 p3 = new Personalisasi3();
+            p3.setVisible(true);
+            dispose();
+    }//GEN-LAST:event_btnNextMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -75,17 +119,31 @@ public class Personalisasi2 extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Personalisasi2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Personalisasi2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Personalisasi2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Personalisasi2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Personalisasi2().setVisible(true));
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Personalisasi2().setVisible(true);
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
+    private javax.swing.JLabel btnNext;
+    private javax.swing.JLabel btnPrev;
+    private javax.swing.JTextField inputFullName;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
