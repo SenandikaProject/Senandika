@@ -1,22 +1,25 @@
 package senandika.UILayer;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.awt.Image;
+import java.io.File;
+import java.net.URL;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import senandika.ServiceLayer.ProfileService;
 
-/**
- *
- * @author SAHABAT-IT
- */
+
 public class Profile extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Profile
-     */
+    private File selectedFile;
+    private final String BASE_URL =
+        "http://localhost:5000";
     public Profile() {
         initComponents();
         setLocationRelativeTo(null);
+        loadProfile();
     }
 
     /**
@@ -30,9 +33,17 @@ public class Profile extends javax.swing.JFrame {
 
         Slide1 = new javax.swing.JPanel();
         mood_nav = new javax.swing.JLabel();
+        txtUsername = new javax.swing.JLabel();
+        txtFullName = new javax.swing.JLabel();
         jurnal_nav = new javax.swing.JLabel();
         home_nav = new javax.swing.JLabel();
         navbar = new javax.swing.JLabel();
+        cbGender = new javax.swing.JComboBox<>();
+        cbStress = new javax.swing.JComboBox<>();
+        cbActivity = new javax.swing.JComboBox<>();
+        profileImg = new javax.swing.JLabel();
+        btnChooseFoto = new javax.swing.JButton();
+        btnSaveFoto = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -46,6 +57,14 @@ public class Profile extends javax.swing.JFrame {
             }
         });
         Slide1.add(mood_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 570, 60, 50));
+
+        txtUsername.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtUsername.setText("Username");
+        Slide1.add(txtUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, -1, -1));
+
+        txtFullName.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtFullName.setText("Full Name");
+        Slide1.add(txtFullName, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 140, -1, -1));
 
         jurnal_nav.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -64,12 +83,64 @@ public class Profile extends javax.swing.JFrame {
         navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-profile.png"))); // NOI18N
         Slide1.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 538, -1, -1));
 
+        cbGender.setBackground(new java.awt.Color(246, 255, 248));
+        cbGender.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cbGender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Salah Satu", "Laki-Laki", "Perempuan", " " }));
+        cbGender.setBorder(null);
+        cbGender.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbGenderActionPerformed(evt);
+            }
+        });
+        Slide1.add(cbGender, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 190, 160, 20));
+
+        cbStress.setBackground(new java.awt.Color(246, 255, 248));
+        cbStress.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cbStress.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Salah Satu", "Sangat Santai", "Santai", "Normal", "Stres", "Sangat Stres", " " }));
+        cbStress.setBorder(null);
+        cbStress.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbStressActionPerformed(evt);
+            }
+        });
+        Slide1.add(cbStress, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 220, 160, 20));
+
+        cbActivity.setBackground(new java.awt.Color(246, 255, 248));
+        cbActivity.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cbActivity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Salah Satu", "Mendengarkan musik", "Olahraga", "Menonton film", "Bermain game", "Membaca buku", "Meditasi", "Jalan-jalan", " " }));
+        cbActivity.setBorder(null);
+        cbActivity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbActivityActionPerformed(evt);
+            }
+        });
+        Slide1.add(cbActivity, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 250, 160, 20));
+
+        profileImg.setPreferredSize(new java.awt.Dimension(50, 50));
+        Slide1.add(profileImg, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 350, -1, -1));
+
+        btnChooseFoto.setText("Upload Foto");
+        btnChooseFoto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChooseFotoActionPerformed(evt);
+            }
+        });
+        Slide1.add(btnChooseFoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, -1, -1));
+
+        btnSaveFoto.setText("Simpan Foto");
+        btnSaveFoto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveFotoActionPerformed(evt);
+            }
+        });
+        Slide1.add(btnSaveFoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Slide1, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+                .addComponent(Slide1, javax.swing.GroupLayout.PREFERRED_SIZE, 390, Short.MAX_VALUE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -100,9 +171,214 @@ public class Profile extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jurnal_navMouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
+    private void cbGenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbGenderActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbGenderActionPerformed
+
+    private void cbStressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStressActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbStressActionPerformed
+
+    private void cbActivityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbActivityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbActivityActionPerformed
+
+    private void btnChooseFotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseFotoActionPerformed
+        JFileChooser chooser =
+            new JFileChooser();
+
+    int result =
+            chooser.showOpenDialog(this);
+
+    if (result == JFileChooser.APPROVE_OPTION) {
+
+        selectedFile =
+                chooser.getSelectedFile();
+
+        ImageIcon icon =
+                new ImageIcon(
+                        selectedFile
+                        .getAbsolutePath()
+                );
+
+        Image image =
+                icon.getImage()
+                .getScaledInstance(
+
+                        profileImg.getWidth(),
+
+                        profileImg.getHeight(),
+
+                        Image.SCALE_SMOOTH
+                );
+
+        profileImg.setIcon(
+                new ImageIcon(image)
+        );
+    }
+    }//GEN-LAST:event_btnChooseFotoActionPerformed
+
+    private void btnSaveFotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveFotoActionPerformed
+        try {
+
+            if (selectedFile == null) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Pilih gambar terlebih dahulu"
+                );
+
+                return;
+            }
+
+            ProfileService service =
+                    new ProfileService();
+
+            String response =
+                    service.uploadProfilePhoto(
+                            selectedFile
+                    );
+
+            System.out.println(response);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Foto profile berhasil diupload"
+            );
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage()
+            );
+        }
+    }//GEN-LAST:event_btnSaveFotoActionPerformed
+
+    private void loadProfile() {
+
+        try {
+
+            ProfileService service =
+                    new ProfileService();
+
+            String response =
+                    service.getProfile();
+
+            JsonObject json =
+                    JsonParser
+                    .parseString(response)
+                    .getAsJsonObject();
+
+            JsonObject data =
+                    json.getAsJsonObject("data");
+
+            txtUsername.setText(
+                    data.get("username")
+                    .getAsString()
+            );
+
+            txtFullName.setText(
+                    data.get("full_name")
+                    .getAsString()
+            );
+
+            cbGender.setSelectedItem(
+                    data.get("gender")
+                    .getAsString()
+            );
+
+            int stressLevel =
+                    data.get("stress_level")
+                    .getAsInt();
+
+            switch (stressLevel) {
+
+                case 1:
+                    cbStress.setSelectedItem(
+                            "Sangat Santai"
+                    );
+                    break;
+
+                case 2:
+                    cbStress.setSelectedItem(
+                            "Santai"
+                    );
+                    break;
+
+                case 3:
+                    cbStress.setSelectedItem(
+                            "Normal"
+                    );
+                    break;
+
+                case 4:
+                    cbStress.setSelectedItem(
+                            "Stres"
+                    );
+                    break;
+
+                case 5:
+                    cbStress.setSelectedItem(
+                            "Sangat Stres"
+                    );
+                    break;
+            }
+
+            cbActivity.setSelectedItem(
+                    data.get("favorite_activity")
+                    .getAsString()
+            );
+
+            // =====================
+            // LOAD PROFILE IMAGE
+            // =====================
+
+            if (
+                data.has("profile_picture")
+                &&
+                !data.get("profile_picture")
+                .isJsonNull()
+            ) {
+
+                    String imagePath =
+                            data.get("profile_picture")
+                            .getAsString();
+
+                    String imageUrl =
+                            BASE_URL + imagePath;
+
+                    URL url =
+                            new URL(imageUrl);
+
+                    ImageIcon icon =
+                            new ImageIcon(url);
+
+                    Image image =
+                            icon.getImage()
+                            .getScaledInstance(
+
+                                    profileImg.getWidth(),
+
+                                    profileImg.getHeight(),
+
+                                    Image.SCALE_SMOOTH
+                            );
+
+                    profileImg.setIcon(
+                            new ImageIcon(image)
+                    );
+                }
+
+            } catch (Exception e) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        e.getMessage()
+                );
+            }
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -137,9 +413,17 @@ public class Profile extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
+    private javax.swing.JButton btnChooseFoto;
+    private javax.swing.JButton btnSaveFoto;
+    private javax.swing.JComboBox<String> cbActivity;
+    private javax.swing.JComboBox<String> cbGender;
+    private javax.swing.JComboBox<String> cbStress;
     private javax.swing.JLabel home_nav;
     private javax.swing.JLabel jurnal_nav;
     private javax.swing.JLabel mood_nav;
     private javax.swing.JLabel navbar;
+    private javax.swing.JLabel profileImg;
+    private javax.swing.JLabel txtFullName;
+    private javax.swing.JLabel txtUsername;
     // End of variables declaration//GEN-END:variables
 }
