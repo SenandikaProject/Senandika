@@ -22,6 +22,7 @@ public class PersonalisasiFinish extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
         Slide3 = new javax.swing.JPanel();
         btnStartnow = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -102,12 +103,9 @@ public class PersonalisasiFinish extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel Slide1;
-    private javax.swing.JPanel Slide2;
     private javax.swing.JPanel Slide3;
-    private javax.swing.JLabel btnStart;
-    private javax.swing.JLabel btnStart1;
     private javax.swing.JLabel btnStartnow;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
