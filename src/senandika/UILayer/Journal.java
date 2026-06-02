@@ -65,6 +65,8 @@ public class Journal extends javax.swing.JFrame {
         profil_nav = new javax.swing.JLabel();
         home_nav = new javax.swing.JLabel();
         navbar = new javax.swing.JLabel();
+        btnLogout = new javax.swing.JButton();
+        txtEmail = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -95,6 +97,18 @@ public class Journal extends javax.swing.JFrame {
 
         navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-jurnal.png"))); // NOI18N
         Slide1.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 538, -1, -1));
+
+        btnLogout.setText("Tambah Data");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
+        Slide1.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 440, -1, -1));
+
+        txtEmail.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        txtEmail.setText("HALAMAN JURNAL");
+        Slide1.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 100, 150, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -131,6 +145,12 @@ public class Journal extends javax.swing.JFrame {
         home.setVisible(true);
         dispose();
     }//GEN-LAST:event_home_navMouseClicked
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        CreateJournal createJurnal= new CreateJournal();
+        createJurnal.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btnLogoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -169,9 +189,11 @@ public class Journal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
+    private javax.swing.JButton btnLogout;
     private javax.swing.JLabel home_nav;
     private javax.swing.JLabel mood_nav;
     private javax.swing.JLabel navbar;
     private javax.swing.JLabel profil_nav;
+    private javax.swing.JLabel txtEmail;
     // End of variables declaration//GEN-END:variables
 }

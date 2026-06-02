@@ -8,6 +8,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import senandika.ServiceLayer.ProfileService;
 import senandika.ServiceLayer.Session;
 import senandika.UILayer.Autentikasi.Login;
@@ -208,9 +209,19 @@ public class Profile extends javax.swing.JFrame {
     }//GEN-LAST:event_cbActivityActionPerformed
 
     private void btnChooseFotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChooseFotoActionPerformed
-        JFileChooser chooser =
+    JFileChooser chooser =
             new JFileChooser();
-
+    
+    chooser.setFileFilter(
+        new FileNameExtensionFilter(
+                "Image Files",
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+        )
+    );
+    
     int result =
             chooser.showOpenDialog(this);
 
