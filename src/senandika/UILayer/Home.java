@@ -4,6 +4,8 @@
  */
 package senandika.UILayer;
 
+import senandika.FontManager;
+
 /**
  *
  * @author SAHABAT-IT
@@ -16,6 +18,7 @@ public class Home extends javax.swing.JFrame {
     public Home() {
         initComponents();
         setLocationRelativeTo(null);
+        jLabel1.setFont(FontManager.getPoppins(24f));
     }
 
     /**
@@ -32,6 +35,7 @@ public class Home extends javax.swing.JFrame {
         profil_nav = new javax.swing.JLabel();
         mood_nav = new javax.swing.JLabel();
         navbar = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,6 +66,9 @@ public class Home extends javax.swing.JFrame {
 
         navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-home.png"))); // NOI18N
         Slide1.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 538, -1, -1));
+
+        jLabel1.setText("Testing font");
+        Slide1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -137,6 +144,7 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jurnal_nav;
     private javax.swing.JLabel mood_nav;
     private javax.swing.JLabel navbar;
