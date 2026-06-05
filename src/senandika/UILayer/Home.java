@@ -4,6 +4,15 @@
  */
 package senandika.UILayer;
 
+import Components.MoodCard;
+import java.awt.Color;
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import org.netbeans.lib.awtextra.AbsoluteConstraints;
+import org.netbeans.lib.awtextra.AbsoluteLayout;
 import senandika.FontManager;
 
 /**
@@ -18,8 +27,87 @@ public class Home extends javax.swing.JFrame {
     public Home() {
         initComponents();
         setLocationRelativeTo(null);
-        jLabel1.setFont(FontManager.getPoppins(24f));
+        initUI();
     }
+    
+    private void initUI() {
+
+        setTitle("Senandika");
+
+        setSize(400,640);
+
+        setLocationRelativeTo(null);
+
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
+        );
+
+        JPanel content =
+                new JPanel();
+
+        content.setBackground(
+            new Color(246,255,248)
+                
+        );
+        
+        content.setOpaque(true);
+
+        content.setPreferredSize(
+                new java.awt.Dimension(
+                        400,
+                        1200
+                )
+        );
+
+        content.setLayout(
+                new org.netbeans.lib.awtextra.AbsoluteLayout()
+        );
+
+        jScrollPane1.setViewportView(content);
+        
+        jScrollPane1.getViewport().setBackground(
+            new Color(246,255,248)
+        );
+
+        jScrollPane1.setBorder(null);
+        
+        JLabel greeting = new JLabel(
+            "<html>Halo Tania Alyana,<br>senang melihatmu hari ini ^_^</html>"
+        );
+
+        greeting.setFont(
+            FontManager.getPoppins(24f)
+        );
+
+        greeting.setForeground(
+            new Color(137,126,255)
+        );
+
+        content.add(
+            greeting,
+            new AbsoluteConstraints(
+                24,
+                80,
+                320,
+                80
+            )
+        );
+
+        MoodCard moodCard =
+                new MoodCard();
+
+        content.add(
+                moodCard,
+                new org.netbeans.lib.awtextra.AbsoluteConstraints(
+                        24,
+                        180,
+                        340,
+                        220
+                )
+        );
+    }
+
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,7 +123,7 @@ public class Home extends javax.swing.JFrame {
         profil_nav = new javax.swing.JLabel();
         mood_nav = new javax.swing.JLabel();
         navbar = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,15 +155,15 @@ public class Home extends javax.swing.JFrame {
         navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-home.png"))); // NOI18N
         Slide1.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 538, -1, -1));
 
-        jLabel1.setText("Testing font");
-        Slide1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, -1, -1));
+        jScrollPane1.setHorizontalScrollBar(null);
+        Slide1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 550));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Slide1, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addComponent(Slide1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -144,7 +232,7 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Slide1;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jurnal_nav;
     private javax.swing.JLabel mood_nav;
     private javax.swing.JLabel navbar;
