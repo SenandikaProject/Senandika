@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package senandika.UILayer;
 
 import Components.MoodCard;
@@ -15,10 +11,6 @@ import org.netbeans.lib.awtextra.AbsoluteConstraints;
 import org.netbeans.lib.awtextra.AbsoluteLayout;
 import senandika.FontManager;
 
-/**
- *
- * @author SAHABAT-IT
- */
 public class Home extends javax.swing.JFrame {
 
     /**
@@ -26,16 +18,13 @@ public class Home extends javax.swing.JFrame {
      */
     public Home() {
         initComponents();
-        setLocationRelativeTo(null);
         initUI();
     }
     
     private void initUI() {
 
         setTitle("Senandika");
-
-        setSize(400,640);
-
+        pack();
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(
@@ -50,15 +39,20 @@ public class Home extends javax.swing.JFrame {
                 
         );
         
+        content.revalidate();
+        content.repaint();
+        
         content.setOpaque(true);
-
+        
+        int lastY = 420;
         content.setPreferredSize(
                 new java.awt.Dimension(
-                        400,
-                        1200
+                        398,
+                        lastY + 50
                 )
         );
-
+        
+       
         content.setLayout(
                 new org.netbeans.lib.awtextra.AbsoluteLayout()
         );
@@ -105,6 +99,7 @@ public class Home extends javax.swing.JFrame {
                         220
                 )
         );
+        
     }
 
     
