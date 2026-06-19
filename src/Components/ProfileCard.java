@@ -19,20 +19,19 @@ public class ProfileCard extends JPanel {
     // Komponen UI Atas
     private JLabel profileImg;
     private JLabel lblEmailSub;
-    private JButton btnChooseFoto;
-    private JButton btnSaveFoto;
-
+    
     // Komponen UI Form Data Pengguna
     private JTextField txtUsername;
     private JTextField txtFullName;
     private JComboBox<String> cbGender;
     private JComboBox<String> cbStress;
     private JComboBox<String> cbActivity;
-
-    // Komponen UI Bawah
-    private JButton btnLogout;
-    private JButton btnUpdateProfile;
-
+    
+    // Komponen Tombol
+    private RoundedButton btnChooseFoto;
+    private RoundedButton btnSaveFoto;
+    private RoundedButton BtnLogout;
+    private RoundedButton BtnUpdateProfile;
     // State Internal Gambar
     private File selectedFile;
     private final JFrame parentFrame; // Dibutuhkan untuk context dispose/dialog
@@ -60,66 +59,91 @@ public class ProfileCard extends JPanel {
         lblEmailSub.setHorizontalAlignment(SwingConstants.CENTER);
         add(lblEmailSub, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 320, 20));
 
-        btnChooseFoto = new JButton("Upload Foto");
+        btnChooseFoto = new RoundedButton();
+        btnChooseFoto.setText("Upload Foto");
+        ((RoundedButton) btnChooseFoto).setCornerRadius(8);
         btnChooseFoto.setFocusPainted(false);
+        btnChooseFoto.setBackground(new Color(217,217,217));
         add(btnChooseFoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 160, 110, 30));
 
-        btnSaveFoto = new JButton("Simpan Foto");
+        btnSaveFoto = new RoundedButton();
+        btnSaveFoto.setText("Simpan Foto");
+        ((RoundedButton) btnSaveFoto).setCornerRadius(8);
         btnSaveFoto.setFocusPainted(false);
+        btnSaveFoto.setBackground(new Color(137,126,255));
+        btnSaveFoto.setForeground(Color.WHITE);
         add(btnSaveFoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(185, 160, 110, 30));
 
-
         // --- BAGIAN TENGAH: FORM DATA PENGGUNA ---
-        // 1. Username Field
         JLabel lblUser = new JLabel("Username");
-        lblUser.setFont(
-            FontManager.getPoppins(11f)
-        );
+        lblUser.setFont(FontManager.getPoppins(11f));
         add(lblUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 205, 260, 15));
-        
+
         txtUsername = new JTextField();
-        txtUsername.setEditable(false); // Sesuai perilaku awal data profile readonly di awal
+        txtUsername.setEditable(false);
+        txtUsername.setBackground(new Color(237,238,255));
         add(txtUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 225, 260, 30));
 
-        // 2. Full Name Field
         JLabel lblName = new JLabel("Full Name");
-        lblName.setFont(
-            FontManager.getPoppins(11f)
-        );
+        lblName.setFont(FontManager.getPoppins(11f));
         add(lblName, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 260, 260, 15));
-        
+
         txtFullName = new JTextField();
         txtFullName.setEditable(false);
+        txtFullName.setBackground(new Color(237,238,255));
         add(txtFullName, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 280, 260, 30));
 
-        // 3. Gender Dropdown
-        cbGender = new JComboBox<>(new String[]{"Pilih Salah Satu", "Laki-laki", "Perempuan"});
+        cbGender = new JComboBox<>(new String[]{
+            "Pilih Salah Satu",
+            "Laki-laki",
+            "Perempuan"
+        });
         cbGender.setEnabled(false);
+        cbGender.setBackground(new Color(237,238,255));
         add(cbGender, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 320, 260, 30));
 
-        // 4. Stress Level Dropdown
-        cbStress = new JComboBox<>(new String[]{"Pilih Salah Satu", "Sangat Santai", "Santai", "Normal", "Stres", "Sangat Stres"});
+        cbStress = new JComboBox<>(new String[]{
+            "Pilih Salah Satu",
+            "Sangat Santai",
+            "Santai",
+            "Normal",
+            "Stres",
+            "Sangat Stres"
+        });
         cbStress.setEnabled(false);
+        cbStress.setBackground(new Color(237,238,255));
         add(cbStress, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 360, 260, 30));
 
-        // 5. Favorite Activity Dropdown
-        cbActivity = new JComboBox<>(new String[]{"Pilih Salah Satu", "Mendengarkan musik", "Olahraga", "Menonton film", "Bermain game", "Membaca buku", "Meditasi", "Jalan-jalan"}); 
+        cbActivity = new JComboBox<>(new String[]{
+            "Pilih Salah Satu",
+            "Mendengarkan musik",
+            "Olahraga",
+            "Menonton film",
+            "Bermain game",
+            "Membaca buku",
+            "Meditasi",
+            "Jalan-jalan"
+        });
         cbActivity.setEnabled(false);
+        cbActivity.setBackground(new Color(237,238,255));
         add(cbActivity, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 400, 260, 30));
 
-
         // --- BAGIAN BAWAH: TOMBOL AKSI ---
-        btnLogout = new JButton("Logout");
-        btnLogout.setBackground(new Color(239, 68, 68));
-        btnLogout.setForeground(Color.WHITE);
-        btnLogout.setFocusPainted(false);
-        add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 460, 100, 35));
+        BtnLogout = new RoundedButton();
+        BtnLogout.setText("Logout");
+        BtnLogout.setBackground(new Color(239, 68, 68));
+        ((RoundedButton) BtnLogout).setCornerRadius(8);
+        BtnLogout.setForeground(Color.WHITE);
+        BtnLogout.setFocusPainted(false);
+        add(BtnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 460, 100, 35));
 
-        btnUpdateProfile = new JButton("Update Profile");
-        btnUpdateProfile.setBackground(new Color(59, 130, 246));
-        btnUpdateProfile.setForeground(Color.WHITE);
-        btnUpdateProfile.setFocusPainted(false);
-        add(btnUpdateProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(175, 460, 120, 35));
+        BtnUpdateProfile = new RoundedButton();
+        BtnUpdateProfile.setText("Update Profil");
+        BtnUpdateProfile.setBackground(new Color(59, 130, 246));
+        ((RoundedButton) BtnUpdateProfile).setCornerRadius(8);
+        BtnUpdateProfile.setForeground(Color.WHITE);
+        BtnUpdateProfile.setFocusPainted(false);
+        add(BtnUpdateProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(175, 460, 120, 35));
     }
 
     private void initActionListeners() {
@@ -158,7 +182,7 @@ public class ProfileCard extends JPanel {
         });
 
         // Event Logout
-        btnLogout.addActionListener(e -> {
+        BtnLogout.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(parentFrame, "Yakin ingin logout?", "Logout", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 Session.TOKEN = "";
@@ -169,7 +193,7 @@ public class ProfileCard extends JPanel {
         });
 
         // Event Pindah ke Window Update Profile
-        btnUpdateProfile.addActionListener(e -> {
+        BtnUpdateProfile.addActionListener(e -> {
             UpdateProfile update = new UpdateProfile();
             update.setVisible(true);
             parentFrame.dispose();
@@ -179,7 +203,7 @@ public class ProfileCard extends JPanel {
     // ==========================================
     // SEPERTI PROPS: Method Pengisi Tampilan Data
     // ==========================================
-    public void setProfileData(String email, String username, String fullName, String gender, String stressText, String favoriteActivity) {
+    public void setProfileData(String email, String fullName, String username, String gender, String stressText, String favoriteActivity) {
         lblEmailSub.setText(email);
         txtUsername.setText(username);
         txtFullName.setText(fullName);

@@ -7,6 +7,7 @@ package senandika;
 import senandika.UILayer.Autentikasi.Login;
 import senandika.UILayer.Home;
 import senandika.UILayer.Personalisasi.Personalisasi4;
+import senandika.UILayer.WelcomeScreen.SplashScreen;
 
 
 /**

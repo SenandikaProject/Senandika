@@ -28,6 +28,7 @@ public class Profile extends javax.swing.JFrame {
         initUI();
         loadProfile();
     }
+    
     private void initUI(){
         setTitle("Senandika");
         pack();
@@ -184,8 +185,18 @@ public class Profile extends javax.swing.JFrame {
             // 'this' mengirimkan context Frame utama agar dialog/dispose bekerja sempurna
             profileCard = new ProfileCard(this); 
 
-            
-            content.add(profileCard, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 360, 600));
+            int x = (content.getWidth() - 398) / 2;
+            int y = (content.getHeight() - 600) / 2;
+
+            content.add(
+                profileCard,
+                new org.netbeans.lib.awtextra.AbsoluteConstraints(
+                    x,
+                    y,
+                    398,
+                    600
+                )
+            );
             content.setComponentZOrder(profileCard, 1);
             if (jPanel1 != null) {
                 content.setComponentZOrder(jPanel1, 0); // Navbar tetap di lapisan paling atas (front)
