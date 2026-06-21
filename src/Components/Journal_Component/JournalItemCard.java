@@ -22,13 +22,16 @@ public class JournalItemCard extends JPanel {
         setLayout(new BorderLayout());
 
         JPanel card = new JPanel();
-        card.setBackground(new Color(246,255,248));
+        card.setBackground(Color.WHITE);
         card.setBorder(
             BorderFactory.createLineBorder(
                 new Color(215,190,255)
             )
         );
-
+        card.setBorder(BorderFactory.createCompoundBorder(
+           BorderFactory.createEmptyBorder(10, 0, 10, 0), // Mengatur jarak antar card (top & bottom)
+            this.getBorder() // Mempertahankan border asli (jika ada rounded border/line border)
+        ));
         card.setLayout(new BorderLayout());
 
         JPanel top = new JPanel();
