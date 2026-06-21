@@ -1,6 +1,7 @@
 package senandika.UILayer;
 
 import Components.Journal_Component.JournalCard;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -20,42 +21,33 @@ public class Journal extends javax.swing.JFrame {
     }
 
     private void initUI() {
-
+        // 1. Atur kebijakan scrollbar pada jScrollPane1 bawaan frame
         jScrollPane1.setHorizontalScrollBarPolicy(
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         );
-
         jScrollPane1.setVerticalScrollBarPolicy(
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
         );
 
+        // 2. Bersihkan content panel
         content.removeAll();
+        content.setBackground(new Color(246,255,248));
 
-        content.setBackground(
-                new Color(246,255,248)
-        );
+        // 3. Ubah layout content menjadi BorderLayout agar komponen di dalamnya (jScrollPane1) otomatis full-screen
+        content.setLayout(new BorderLayout());
 
-        content.setLayout(
-                new GridBagLayout()
-        );
+        // 4. Inisialisasi JournalCard
+        journalCard = new JournalCard(this);
 
-        journalCard =
-                new JournalCard(this);
+        // 5. Masukkan journalCard langsung ke dalam viewport jScrollPane1
+        jScrollPane1.setViewportView(journalCard);
 
-        GridBagConstraints gbc =
-                new GridBagConstraints();
+        // 6. Masukkan kembali jScrollPane1 ke content panel (Center)
+        content.add(jScrollPane1, BorderLayout.CENTER);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-
-        gbc.anchor =
-                GridBagConstraints.NORTH;
-
-        content.add(
-                journalCard,
-                gbc
-        );
+        // Load data dari API
         journalCard.loadData();
+
         content.revalidate();
         content.repaint();
     }
@@ -66,9 +58,8 @@ public class Journal extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
         content = new javax.swing.JPanel();
-        btn_tambahJurnal = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
         navbar_panel = new javax.swing.JPanel();
         mood_nav = new javax.swing.JLabel();
         profile_nav = new javax.swing.JLabel();
@@ -79,17 +70,13 @@ public class Journal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jScrollPane1.setBackground(new java.awt.Color(246, 255, 248));
-        jScrollPane1.setBorder(null);
-
         content.setBackground(new java.awt.Color(246, 255, 248));
         content.setPreferredSize(new java.awt.Dimension(398, 550));
         content.setLayout(new java.awt.GridBagLayout());
 
-        btn_tambahJurnal.setText("Tambah Data");
-        content.add(btn_tambahJurnal, new java.awt.GridBagConstraints());
-
-        jScrollPane1.setViewportView(content);
+        jScrollPane1.setBackground(new java.awt.Color(246, 255, 248));
+        jScrollPane1.setBorder(null);
+        content.add(jScrollPane1, new java.awt.GridBagConstraints());
 
         navbar_panel.setBackground(new java.awt.Color(246, 255, 248));
         navbar_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -125,15 +112,15 @@ public class Journal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(navbar_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(navbar_panel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(content, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(content, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(navbar_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -194,7 +181,6 @@ public class Journal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn_tambahJurnal;
     private javax.swing.JPanel content;
     private javax.swing.JLabel home_nav;
     private javax.swing.JButton jButton1;
