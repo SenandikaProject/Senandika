@@ -7,9 +7,10 @@ package senandika.ServiceLayer;
 // MoodService.java
 import java.util.ArrayList;
 import java.util.List;
-import senandika.UILayer.Mood;
+import senandika.Model.Mood;
 
 public class MoodService {
+    // Ubah list agar menampung objek data model dari database/API
     private List<Mood> moods = new ArrayList<>();
 
     public boolean addMood(Mood mood) {
@@ -27,7 +28,6 @@ public class MoodService {
         }
 
         int total = 0;
-
         for (Mood mood : moods) {
             total += mood.getTingkatMood();
         }
