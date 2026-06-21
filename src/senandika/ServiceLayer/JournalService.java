@@ -180,14 +180,12 @@ public class JournalService {
     
     
     
-    public List<JournalData> getJournals()
-            throws Exception {
+    public List<JournalData> getJournals() throws Exception {
 
         URL url = new URL(BASE_URL);
 
         HttpURLConnection conn =
-                (HttpURLConnection)
-                        url.openConnection();
+                (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
 
@@ -208,21 +206,16 @@ public class JournalService {
 
         String line;
 
-        while ((line = br.readLine())
-                != null) {
-
+        while ((line = br.readLine()) != null) {
             response.append(line);
         }
 
-        JsonObject json =
-                JsonParser.parseString(
-                        response.toString()
-                ).getAsJsonObject();
+        System.out.println(response.toString());
 
         JsonArray data =
-                json.getAsJsonArray(
-                        "data"
-                );
+                JsonParser.parseString(
+                        response.toString()
+                ).getAsJsonArray();
 
         List<JournalData> journals =
                 new ArrayList<>();
@@ -240,24 +233,37 @@ public class JournalService {
             );
 
             journal.setJudul(
-                    obj.get("judul")
-                            .getAsString()
+                    obj.get("judul").getAsString()
             );
 
             journal.setIsi(
-                    obj.get("isi")
-                            .getAsString()
+                    obj.get("isi").getAsString()
             );
 
             journal.setTanggal(
-                    obj.get("tanggal")
-                            .getAsString()
+                    obj.get("tanggal").getAsString()
             );
 
             journal.setStreak(
-                    obj.get("streak")
-                            .getAsInt()
+                    obj.get("streak").getAsInt()
             );
+
+            if(obj.has("image_path")
+                    && !obj.get("image_path").isJsonNull()) {
+
+                journal.setImagePath(
+                        obj.get("image_path")
+                                .getAsString()
+                );
+            }
+
+            if(obj.has("created_at")) {
+
+                journal.setCreatedAt(
+                        obj.get("created_at")
+                                .getAsString()
+                );
+            }
 
             journals.add(journal);
         }
@@ -306,7 +312,6 @@ public class JournalService {
                 JsonParser.parseString(
                         response.toString()
                 ).getAsJsonObject();
-
         return json.get("streak")
                 .getAsInt();
     }

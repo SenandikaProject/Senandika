@@ -10,10 +10,6 @@ import senandika.UILayer.Personalisasi.Personalisasi4;
 import senandika.UILayer.WelcomeScreen.SplashScreen;
 
 
-/**
- *
- * @author SAHABAT-IT
- */
 public class Senandika {
 
 

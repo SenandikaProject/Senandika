@@ -4,7 +4,10 @@ import Components.ProfileCard;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.ScrollPane;
 import java.io.File;
 import java.net.URL;
 import javax.swing.ImageIcon;
@@ -12,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import senandika.ServiceLayer.ProfileService;
 import senandika.ServiceLayer.Session;
@@ -25,44 +29,43 @@ public class Profile extends javax.swing.JFrame {
         "http://localhost:5000";
     public Profile() {
         initComponents();
+        setLocationRelativeTo(null);
         initUI();
         loadProfile();
     }
     
-    private void initUI(){
-        setTitle("Senandika");
-        pack();
-        setLocationRelativeTo(null);
+    private void initUI() {
+        // 1. Matikan scrollbar horizontal secara permanen
+        jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        setDefaultCloseOperation(
-                JFrame.EXIT_ON_CLOSE
-        );
+        // 2. Gunakan variabel 'content' bawaan
+        content.setBackground(new Color(246, 255, 248));
+        content.setOpaque(true);
 
-        JPanel content =
-                new JPanel();
+        // 3. Atur Layout content menjadi GridBagLayout agar card otomatis berada di tengah
+        content.setLayout(new GridBagLayout());
+        content.removeAll();
 
-        content.setBackground(
-            new Color(246,255,248)
-                
-        );
-        
+        // 4. Perbesar PreferredSize vertikal agar menampung seluruh isi komponen tanpa terpotong
+        content.setPreferredSize(new java.awt.Dimension(398, 720));
+
+        // 5. Inisialisasi ke VARIABEL GLOBAL 'profileCard', jangan membuat variabel lokal baru!
+        profileCard = new ProfileCard(this);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        content.add(profileCard, gbc);
+
+        // 6. Sinkronisasi ulang hierarki layout Swing
         content.revalidate();
         content.repaint();
-        
-        content.setOpaque(true);
-        
-        int lastY = 420;
-        content.setPreferredSize(
-                new java.awt.Dimension(
-                        398,
-                        lastY + 50
-                )
-        );
-        
-       
-        content.setLayout(
-                new org.netbeans.lib.awtextra.AbsoluteLayout()
-        );
+
+        // Jalankan pack() di akhir setelah semua komponen masuk ke dalam antrean window
+        this.pack();
     }
     
     @SuppressWarnings("unchecked")
@@ -70,8 +73,9 @@ public class Profile extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
         content = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
+        navbar_panel = new javax.swing.JPanel();
         mood_nav = new javax.swing.JLabel();
         jurnal_nav = new javax.swing.JLabel();
         home_nav = new javax.swing.JLabel();
@@ -81,81 +85,56 @@ public class Profile extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        content.setBackground(new java.awt.Color(246, 255, 248));
-        content.setPreferredSize(new java.awt.Dimension(816, 546));
-        content.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jScrollPane1.setBorder(null);
 
-        jPanel1.setBackground(new java.awt.Color(246, 255, 248));
+        content.setBackground(new java.awt.Color(246, 255, 248));
+        content.setPreferredSize(new java.awt.Dimension(398, 550));
+        content.setLayout(new java.awt.GridBagLayout());
+        jScrollPane1.setViewportView(content);
+
+        navbar_panel.setBackground(new java.awt.Color(246, 255, 248));
+        navbar_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         mood_nav.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 mood_navMouseClicked(evt);
             }
         });
+        navbar_panel.add(mood_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 30, 60, 50));
 
         jurnal_nav.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jurnal_navMouseClicked(evt);
             }
         });
+        navbar_panel.add(jurnal_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 30, 60, 50));
 
         home_nav.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 home_navMouseClicked(evt);
             }
         });
+        navbar_panel.add(home_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 60, 50));
 
         navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-profile.png"))); // NOI18N
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(37, Short.MAX_VALUE)
-                .addComponent(home_nav, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addComponent(jurnal_nav, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(mood_nav, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(122, 122, 122))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(navbar)
-                    .addGap(0, 0, Short.MAX_VALUE)))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(24, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(home_nav, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jurnal_nav, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mood_nav, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(navbar)
-                    .addGap(0, 0, Short.MAX_VALUE)))
-        );
-
-        content.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 533, -1, 110));
+        navbar_panel.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(content, javax.swing.GroupLayout.PREFERRED_SIZE, 390, Short.MAX_VALUE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(navbar_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(content, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(navbar_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -182,25 +161,16 @@ public class Profile extends javax.swing.JFrame {
     private void loadProfile() {
         // 1. Bersihkan panel dan tempelkan Komponen ProfileCard kustom kita
         if (profileCard == null) {
-            // 'this' mengirimkan context Frame utama agar dialog/dispose bekerja sempurna
-            profileCard = new ProfileCard(this); 
 
-            int x = (content.getWidth() - 398) / 2;
-            int y = (content.getHeight() - 600) / 2;
+            profileCard = new ProfileCard(this);
 
-            content.add(
-                profileCard,
-                new org.netbeans.lib.awtextra.AbsoluteConstraints(
-                    x,
-                    y,
-                    398,
-                    600
-                )
-            );
-            content.setComponentZOrder(profileCard, 1);
-            if (jPanel1 != null) {
-                content.setComponentZOrder(jPanel1, 0); // Navbar tetap di lapisan paling atas (front)
-            }
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+
+            gbc.anchor = GridBagConstraints.CENTER;
+
+            content.add(profileCard, gbc);
         }
 
         try {
@@ -212,8 +182,8 @@ public class Profile extends javax.swing.JFrame {
 
             // Ekstraksi data String dasar
             String email = data.get("email").getAsString();
-            String username = data.get("username").getAsString();
-            String fullName = data.get("full_name").getAsString();
+            String username = data.get("full_name").getAsString();
+            String fullName = data.get("username").getAsString();
             String gender = data.get("gender").getAsString();
             String favoriteActivity = data.get("favorite_activity").getAsString();
 
@@ -286,9 +256,10 @@ public class Profile extends javax.swing.JFrame {
     private javax.swing.JPanel content;
     private javax.swing.JLabel home_nav;
     private javax.swing.JButton jButton1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel jurnal_nav;
     private javax.swing.JLabel mood_nav;
     private javax.swing.JLabel navbar;
+    private javax.swing.JPanel navbar_panel;
     // End of variables declaration//GEN-END:variables
 }

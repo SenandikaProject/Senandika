@@ -1,144 +1,144 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package senandika.UILayer;
 
-import java.time.LocalDate;
+import Components.Journal_Component.JournalCard;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import javax.swing.ScrollPaneConstants;
 
-/**
- *
- * @author SAHABAT-IT
- */
 public class Journal extends javax.swing.JFrame {
+    private JournalCard journalCard;
 
-    private String idJournal;
-    private LocalDate tanggal;
-    private String isi;
-    private int streak;
-    private String userId;
-
-    public void saveJournal() {
-        System.out.println("Journal berhasil disimpan!");
-    }
-
-    public int calculateStreak() {
-        return streak;
-    }
-
-    public String getIsi() {
-        return isi;
-    }
-
-    public String getIdJournal() {
-        return idJournal;
-    }
-
-    public LocalDate getTanggal() {
-        return tanggal;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-    
     public Journal() {
+
         initComponents();
+
         setLocationRelativeTo(null);
+
+        initUI();
+
     }
+
+    private void initUI() {
+
+        jScrollPane1.setHorizontalScrollBarPolicy(
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        );
+
+        jScrollPane1.setVerticalScrollBarPolicy(
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+        );
+
+        content.removeAll();
+
+        content.setBackground(
+                new Color(246,255,248)
+        );
+
+        content.setLayout(
+                new GridBagLayout()
+        );
+
+        journalCard =
+                new JournalCard(this);
+
+        GridBagConstraints gbc =
+                new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        gbc.anchor =
+                GridBagConstraints.NORTH;
+
+        content.add(
+                journalCard,
+                gbc
+        );
+        journalCard.loadData();
+        content.revalidate();
+        content.repaint();
+    }
+
     
-    public Journal(String idJournal, LocalDate tanggal,
-                   String isi, int streak, String userId) {
-        this.idJournal = idJournal;
-        this.tanggal = tanggal;
-        this.isi = isi;
-        this.streak = streak;
-        this.userId = userId;
-    }
-        
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        Slide1 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        content = new javax.swing.JPanel();
+        btn_tambahJurnal = new javax.swing.JButton();
+        navbar_panel = new javax.swing.JPanel();
         mood_nav = new javax.swing.JLabel();
-        profil_nav = new javax.swing.JLabel();
+        profile_nav = new javax.swing.JLabel();
         home_nav = new javax.swing.JLabel();
         navbar = new javax.swing.JLabel();
-        btnLogout = new javax.swing.JButton();
-        txtEmail = new javax.swing.JLabel();
+
+        jButton1.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        Slide1.setBackground(new java.awt.Color(246, 255, 248));
-        Slide1.setPreferredSize(new java.awt.Dimension(816, 546));
-        Slide1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jScrollPane1.setBackground(new java.awt.Color(246, 255, 248));
+        jScrollPane1.setBorder(null);
+
+        content.setBackground(new java.awt.Color(246, 255, 248));
+        content.setPreferredSize(new java.awt.Dimension(398, 550));
+        content.setLayout(new java.awt.GridBagLayout());
+
+        btn_tambahJurnal.setText("Tambah Data");
+        content.add(btn_tambahJurnal, new java.awt.GridBagConstraints());
+
+        jScrollPane1.setViewportView(content);
+
+        navbar_panel.setBackground(new java.awt.Color(246, 255, 248));
+        navbar_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         mood_nav.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 mood_navMouseClicked(evt);
             }
         });
-        Slide1.add(mood_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 570, 60, 50));
+        navbar_panel.add(mood_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 30, 60, 50));
 
-        profil_nav.addMouseListener(new java.awt.event.MouseAdapter() {
+        profile_nav.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                profil_navMouseClicked(evt);
+                profile_navMouseClicked(evt);
             }
         });
-        Slide1.add(profil_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 570, 60, 50));
+        navbar_panel.add(profile_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 30, 60, 50));
 
         home_nav.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 home_navMouseClicked(evt);
             }
         });
-        Slide1.add(home_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 570, 60, 50));
+        navbar_panel.add(home_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 60, 50));
 
         navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-jurnal.png"))); // NOI18N
-        Slide1.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 538, -1, -1));
-
-        btnLogout.setText("Tambah Data");
-        btnLogout.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLogoutActionPerformed(evt);
-            }
-        });
-        Slide1.add(btnLogout, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 440, -1, -1));
-
-        txtEmail.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        txtEmail.setText("HALAMAN JURNAL");
-        Slide1.add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 100, 150, -1));
+        navbar.setToolTipText("");
+        navbar_panel.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(Slide1, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(navbar_panel, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(Slide1, javax.swing.GroupLayout.PREFERRED_SIZE, 640, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(navbar_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void mood_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mood_navMouseClicked
-        Mood mood = new Mood();
-        mood.setVisible(true);
-        dispose();
-    }//GEN-LAST:event_mood_navMouseClicked
-
-    private void profil_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profil_navMouseClicked
-        Profile profil = new Profile();
-        profil.setVisible(true);
-        dispose();
-    }//GEN-LAST:event_profil_navMouseClicked
 
     private void home_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_home_navMouseClicked
         Home home = new Home();
@@ -146,16 +146,19 @@ public class Journal extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_home_navMouseClicked
 
-    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-        CreateJournal createJurnal= new CreateJournal();
-        createJurnal.setVisible(true);
+    private void profile_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profile_navMouseClicked
+        Profile profil= new Profile();
+        profil.setVisible(true);
         dispose();
-    }//GEN-LAST:event_btnLogoutActionPerformed
+    }//GEN-LAST:event_profile_navMouseClicked
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
+    private void mood_navMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mood_navMouseClicked
+        Mood mood = new Mood();
+        mood.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_mood_navMouseClicked
+
+        public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -178,6 +181,9 @@ public class Journal extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Journal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -188,12 +194,14 @@ public class Journal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel Slide1;
-    private javax.swing.JButton btnLogout;
+    private javax.swing.JButton btn_tambahJurnal;
+    private javax.swing.JPanel content;
     private javax.swing.JLabel home_nav;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel mood_nav;
     private javax.swing.JLabel navbar;
-    private javax.swing.JLabel profil_nav;
-    private javax.swing.JLabel txtEmail;
+    private javax.swing.JPanel navbar_panel;
+    private javax.swing.JLabel profile_nav;
     // End of variables declaration//GEN-END:variables
 }

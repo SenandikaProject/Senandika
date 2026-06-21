@@ -7,6 +7,8 @@ public class JournalData {
     private String isi;
     private String tanggal;
     private int streak;
+    private String imagePath;
+    private String createdAt;
 
     public JournalData() {
     }
@@ -16,7 +18,9 @@ public class JournalData {
             String judul,
             String isi,
             String tanggal,
-            int streak
+            int streak,
+            String imagePath,
+            String createdAt
     ) {
 
         this.id = id;
@@ -24,6 +28,8 @@ public class JournalData {
         this.isi = isi;
         this.tanggal = tanggal;
         this.streak = streak;
+        this.imagePath = imagePath;
+        this.createdAt = createdAt;
     }
 
     public int getId() {
@@ -46,6 +52,14 @@ public class JournalData {
         return streak;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -64,6 +78,14 @@ public class JournalData {
 
     public void setStreak(int streak) {
         this.streak = streak;
+    }
+    
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+    
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }
 
