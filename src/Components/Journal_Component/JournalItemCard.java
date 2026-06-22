@@ -68,12 +68,16 @@ public class JournalItemCard extends JPanel {
 
         btnDetail = new RoundedButton();
         btnDetail.setText("Detail");
-
+        btnDetail.setCornerRadius(8);
+        
         btnEdit = new RoundedButton();
         btnEdit.setText("Edit");
-
+        btnEdit.setBackground(Color.BLUE);
+        btnEdit.setCornerRadius(8);
+        
         btnDelete = new RoundedButton();
         btnDelete.setText("Hapus");
+        btnDelete.setCornerRadius(8);
 
         btnDelete.setBackground(
             new Color(255,120,120)

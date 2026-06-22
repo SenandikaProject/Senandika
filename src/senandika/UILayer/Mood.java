@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import net.miginfocom.swing.MigLayout;
@@ -110,7 +111,8 @@ public class Mood extends javax.swing.JFrame {
         content.setBackground(new Color(246, 255, 248));
         content.setOpaque(true);
         content.setLayout(new AbsoluteLayout());
-
+        
+        jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setViewportView(content);
         jScrollPane1.getViewport().setBackground(new Color(246, 255, 248));
         jScrollPane1.setBorder(null);

@@ -22,6 +22,9 @@ public class Journal extends javax.swing.JFrame {
 
     private void initUI() {
         // 1. Atur kebijakan scrollbar pada jScrollPane1 bawaan frame
+        jScrollPane1.getViewport().setBackground(new Color(246, 255, 248));
+        jScrollPane1.setBorder(null);
+        jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
         jScrollPane1.setHorizontalScrollBarPolicy(
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         );

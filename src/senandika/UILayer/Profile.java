@@ -37,6 +37,10 @@ public class Profile extends javax.swing.JFrame {
     private void initUI() {
         // 1. Matikan scrollbar horizontal secara permanen
         jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setViewportView(content);
+        jScrollPane1.getViewport().setBackground(new Color(246, 255, 248));
+        jScrollPane1.setBorder(null);
+        jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
         jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         // 2. Gunakan variabel 'content' bawaan
