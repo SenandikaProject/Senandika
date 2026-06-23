@@ -48,7 +48,7 @@ public class JournalItemCard extends JPanel {
             new Color(137,126,255)
         );
 
-        lblDate = new JLabel("21 Juni 2026");
+        lblDate = new JLabel();
 
         lblDate.setFont(
             FontManager.getPoppins(12f)
@@ -93,16 +93,26 @@ public class JournalItemCard extends JPanel {
         add(card, BorderLayout.CENTER);
     }
 
-    public void setData(
-        int id,
-        String title,
-        String date
-    ){
-
+    public void setData(int id, String judul, String tanggalMentah) {
         this.journalId = id;
+        this.lblTitle.setText(judul);
 
-        lblTitle.setText(title);
-        lblDate.setText(date);
+        String tanggalBersih = tanggalMentah;
+        if (tanggalMentah != null && tanggalMentah.contains("T")) {
+            // Mengambil bagian sebelum huruf 'T' (Contoh: "2026-06-20")
+            String ymd = tanggalMentah.split("T")[0]; 
+
+            // Opsional: Jika ingin mengubah susunan dari YYYY-MM-DD menjadi DD-MM-YYYY
+            String[] parts = ymd.split("-");
+            if (parts.length == 3) {
+                tanggalBersih = parts[2] + "-" + parts[1] + "-" + parts[0]; // Hasil: 20-06-2026
+            } else {
+                tanggalBersih = ymd;
+            }
+        }
+
+        this.lblDate.setText(tanggalBersih);
+        
     }
 
     public RoundedButton getBtnDetail(){
