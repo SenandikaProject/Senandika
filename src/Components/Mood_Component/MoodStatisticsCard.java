@@ -28,144 +28,44 @@ public class MoodStatisticsCard extends RoundedPanel {
         );
     }
 
-    private void initComponents(
-            String icon,
-            String label
-    ) {
+    private void initComponents(String icon, String label) {
+        setLayout(new BorderLayout(0, 2));
+        setOpaque(false); 
 
-        setLayout(
-            new BorderLayout(
-                0,
-                6
-            )
-        );
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(235, 235, 235), 1, true),
+                BorderFactory.createEmptyBorder(8, 4, 8, 4) // Sederhanakan padding luar
+        ));
 
-        setOpaque(true);
-        setBackground(Color.WHITE);
+        // Naikkan tinggi preferred size menjadi 105 agar tulisan multiline ke bawah aman menampung teks
+        setPreferredSize(new Dimension(105, 105));
 
-        setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(
-                    new Color(
-                        235,
-                        235,
-                        235
-                    ),
-                    1,
-                    true
-                ),
-                BorderFactory.createEmptyBorder(
-                    16,
-                    12,
-                    16,
-                    12
-                )
-            )
-        );
+        JLabel iconLabel = new JLabel(icon, SwingConstants.CENTER);
+        iconLabel.setFont(FontManager.getPoppins(11f).deriveFont(Font.BOLD));
+        iconLabel.setForeground(new Color(137, 126, 255)); 
 
-        setPreferredSize(
-            new Dimension(
-                140,
-                110
-            )
-        );
+        valueLabel = new JLabel("-", SwingConstants.CENTER);
+        valueLabel.setFont(FontManager.getPoppins(18f).deriveFont(Font.BOLD));
+        valueLabel.setForeground(new Color(30, 41, 59));
 
-        JLabel iconLabel =
-                new JLabel(
-                    icon,
-                    SwingConstants.CENTER
-                );
+        JLabel captionLabel = new JLabel("<html><center>" + label + "</center></html>", SwingConstants.CENTER);
+        captionLabel.setFont(FontManager.getPoppins(10f));
+        captionLabel.setForeground(new Color(100, 116, 139));
 
-        iconLabel.setFont(
-            FontManager.getPoppins(
-                22f
-            )
-        );
-
-        valueLabel =
-                new JLabel(
-                    "-",
-                    SwingConstants.CENTER
-                );
-
-        valueLabel.setFont(
-            FontManager.getPoppins(
-                20f
-            ).deriveFont(
-                Font.BOLD
-            )
-        );
-
-        valueLabel.setForeground(
-            new Color(
-                30,
-                41,
-                59
-            )
-        );
-
-        JLabel captionLabel =
-                new JLabel(
-                    label,
-                    SwingConstants.CENTER
-                );
-
-        captionLabel.setFont(
-            FontManager.getPoppins(
-                11f
-            )
-        );
-
-        captionLabel.setForeground(
-            new Color(
-                100,
-                116,
-                139
-            )
-        );
-
-        JPanel centerPanel =
-                new JPanel();
-
-        centerPanel.setOpaque(false);
-
-        centerPanel.setLayout(
-            new BoxLayout(
-                centerPanel,
-                BoxLayout.Y_AXIS
-            )
-        );
-
-        valueLabel.setAlignmentX(
-            CENTER_ALIGNMENT
-        );
-
-        centerPanel.add(
-            valueLabel
-        );
-
-        add(
-            iconLabel,
-            BorderLayout.NORTH
-        );
-
-        add(
-            centerPanel,
-            BorderLayout.CENTER
-        );
-
-        add(
-            captionLabel,
-            BorderLayout.SOUTH
-        );
+        add(iconLabel, BorderLayout.NORTH);
+        add(valueLabel, BorderLayout.CENTER);
+        add(captionLabel, BorderLayout.SOUTH);
     }
 
-    public void setValue(
-            String value
-    ) {
-
-        valueLabel.setText(
-            value
-        );
+    public void setValue(String value) {
+        // Jika value berupa teks panjang (bukan angka rata-rata seperti 2.8), kecilkan font-nya
+        if (value != null && value.length() > 4) {
+            valueLabel.setFont(FontManager.getPoppins(12f).deriveFont(Font.BOLD));
+            // Gunakan tag HTML agar teks bisa otomatis turun ke bawah jika space tidak cukup
+            valueLabel.setText("<html><center>" + value + "</center></html>");
+        } else {
+            valueLabel.setFont(FontManager.getPoppins(18f).deriveFont(Font.BOLD));
+            valueLabel.setText(value);
+        }
     }
 }

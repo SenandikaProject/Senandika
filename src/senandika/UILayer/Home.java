@@ -49,6 +49,7 @@ public class Home extends javax.swing.JFrame {
     private RoundedPanel moodSummaryCard;
     private JPanel recommendationsContent;
     private WellnessProgressCard wellnessProgressCard;
+    private Components.Home_Component.DailyInsightCard dailyInsightCard;
 
     /**
      * Creates new form Dashboard / Home
@@ -100,12 +101,12 @@ public class Home extends javax.swing.JFrame {
         moodSummaryContent.setLayout(new BoxLayout(moodSummaryContent, BoxLayout.Y_AXIS));
         moodSummaryCard.add(moodSummaryContent, BorderLayout.CENTER);
         
-        content.add(moodSummaryCard, new AbsoluteConstraints(24, currentY, 344, 150));
+        content.add(moodSummaryCard, new AbsoluteConstraints(24, currentY, 344, 175));
         renderMoodSummaryLoading();
-        currentY += 165;
+        currentY += 190;
 
         // ---- 3. DAILY INSIGHT CARD ----
-        DailyInsightCard dailyInsightCard = new DailyInsightCard();
+        dailyInsightCard = new DailyInsightCard();
         content.add(dailyInsightCard, new AbsoluteConstraints(24, currentY, 344, 110));
         currentY += 125;
 
@@ -321,69 +322,89 @@ public class Home extends javax.swing.JFrame {
     }
     
     private void renderMoodSummaryLocal(Mood mood) {
-    moodSummaryContent.removeAll();
+        moodSummaryContent.removeAll();
 
-    JLabel sectionTitle = new JLabel("Mood terakhir");
-    sectionTitle.setFont(FontManager.getPoppins(11f));
-    sectionTitle.setForeground(new Color(100, 116, 139));
-    sectionTitle.setAlignmentX(0f);
-    moodSummaryContent.add(sectionTitle);
+        JLabel sectionTitle = new JLabel("Mood terakhir");
+        sectionTitle.setFont(FontManager.getPoppins(11f));
+        sectionTitle.setForeground(new Color(100, 116, 139));
+        sectionTitle.setAlignmentX(0f);
+        moodSummaryContent.add(sectionTitle);
 
-    if (mood == null) {
-        JLabel emptyLabel = new JLabel("Belum ada mood dicatat");
-        emptyLabel.setFont(FontManager.getPoppins(13f).deriveFont(Font.BOLD));
-        emptyLabel.setForeground(new Color(30, 41, 59));
-        emptyLabel.setAlignmentX(0f);
-        emptyLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 10, 0));
-        moodSummaryContent.add(emptyLabel);
-    } else {
-        int tingkat = mood.getTingkatMood();
-        String emoji = "😐";
-        String label = "Biasa Aja";
-        
-        // Memetakan manual pengganti MoodScale
-        if (tingkat == 1) { emoji = "😢"; label = "Sangat Sedih"; }
-        else if (tingkat == 2) { emoji = "🙁"; label = "Sedih"; }
-        else if (tingkat == 3) { emoji = "😐"; label = "Biasa Aja"; }
-        else if (tingkat == 4) { emoji = "🙂"; label = "Senang"; }
-        else if (tingkat == 5) { emoji = "😁"; label = "Sangat Senang"; }
+        if (mood == null) {
+            JLabel emptyLabel = new JLabel("Belum ada mood dicatat");
+            emptyLabel.setFont(FontManager.getPoppins(13f).deriveFont(Font.BOLD));
+            emptyLabel.setForeground(new Color(30, 41, 59));
+            emptyLabel.setAlignmentX(0f);
+            emptyLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 10, 0));
+            moodSummaryContent.add(emptyLabel);
+        } else {
+            int tingkat = mood.getTingkatMood();
+            String label = "Senang";
+            
+            if (tingkat == 1) label = "Sedih";
+            else if (tingkat == 2) label = "Murung";
+            else if (tingkat == 3) label = "Marah";
+            else if (tingkat == 4) label = "Senang";
+            else if (tingkat == 5) label = "Ceria";
 
-        JLabel moodLine = new JLabel(emoji + "  " + label);
-        moodLine.setFont(FontManager.getPoppins(15f).deriveFont(Font.BOLD));
-        moodLine.setForeground(new Color(30, 41, 59));
-        moodLine.setAlignmentX(0f);
-        moodLine.setBorder(BorderFactory.createEmptyBorder(4, 0, 6, 0));
-        moodSummaryContent.add(moodLine);
-        
-        if (mood.getCatatan() != null && !mood.getCatatan().trim().isEmpty()) {
-            JLabel noteText = new JLabel("“" + mood.getCatatan() + "”");
-            noteText.setFont(FontManager.getPoppins(12f));
-            noteText.setForeground(new Color(51, 65, 85));
-            noteText.setAlignmentX(0f);
-            noteText.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
-            moodSummaryContent.add(noteText);
+            // 1. BUAT LABEL UNTUK MENAMPUNG ICON GAMBAR PURPLE PNG
+            JLabel iconLabel = new JLabel();
+            try {
+                // Mengambil file asset mood kustom ungu secara dinamis (mood1-purple.png s.d mood5-purple.png)
+                java.net.URL imgURL = getClass().getClassLoader().getResource("Asset/aset-utama/mood" + tingkat + "-purple.png");
+                if (imgURL != null) {
+                    iconLabel.setIcon(new javax.swing.ImageIcon(imgURL));
+                } else {
+                    iconLabel.setText("• "); // Fallback jika gambar tidak ditemukan
+                }
+            } catch (Exception e) {
+                iconLabel.setText("");
+            }
+
+            // 2. KELOMPOKKAN ICON DAN TEKS MOOD AGAR BERJEJER HORIZONTAL
+            JPanel moodLinePanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 6, 0));
+            moodLinePanel.setOpaque(false);
+            moodLinePanel.setAlignmentX(0f);
+            moodLinePanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 6, 0));
+
+            JLabel moodTextLabel = new JLabel(label);
+            moodTextLabel.setFont(FontManager.getPoppins(15f).deriveFont(Font.BOLD));
+            moodTextLabel.setForeground(new Color(30, 41, 59));
+
+            // Masukkan icon gambar dan teks nama mood ke dalam panel baris
+            moodLinePanel.add(iconLabel);
+            moodLinePanel.add(moodTextLabel);
+            moodSummaryContent.add(moodLinePanel);
+            
+            if (mood.getCatatan() != null && !mood.getCatatan().trim().isEmpty()) {
+                JLabel noteText = new JLabel("“" + mood.getCatatan() + "”");
+                noteText.setFont(FontManager.getPoppins(12f));
+                noteText.setForeground(new Color(51, 65, 85));
+                noteText.setAlignmentX(0f);
+                noteText.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+                moodSummaryContent.add(noteText);
+            }
         }
+
+        RoundedButton fillMoodButton = new RoundedButton("Isi Mood Hari Ini");
+        fillMoodButton.setCornerRadius(10);
+        fillMoodButton.setFont(FontManager.getPoppins(12f).deriveFont(Font.BOLD));
+        fillMoodButton.setAlignmentX(0f);
+        fillMoodButton.setPreferredSize(new Dimension(160, 36));
+        fillMoodButton.setMaximumSize(new Dimension(160, 36));
+        fillMoodButton.setBackground(new Color(137, 126, 255));
+        fillMoodButton.setForeground(Color.WHITE);
+        fillMoodButton.addActionListener(e -> {
+            senandika.UILayer.Mood moodWindow = new senandika.UILayer.Mood();
+            moodWindow.setVisible(true);
+            dispose();
+        });
+
+        moodSummaryContent.add(Box.createVerticalStrut(2));
+        moodSummaryContent.add(fillMoodButton);
+        moodSummaryContent.revalidate();
+        moodSummaryContent.repaint();
     }
-
-    RoundedButton fillMoodButton = new RoundedButton("Isi Mood Hari Ini");
-    fillMoodButton.setCornerRadius(10);
-    fillMoodButton.setFont(FontManager.getPoppins(12f).deriveFont(Font.BOLD));
-    fillMoodButton.setAlignmentX(0f);
-    fillMoodButton.setPreferredSize(new Dimension(160, 36));
-    fillMoodButton.setMaximumSize(new Dimension(160, 36));
-    fillMoodButton.setBackground(new Color(137, 126, 255));
-    fillMoodButton.setForeground(Color.WHITE);
-    fillMoodButton.addActionListener(e -> {
-        senandika.UILayer.Mood moodWindow = new senandika.UILayer.Mood();
-        moodWindow.setVisible(true);
-        dispose();
-    });
-
-    moodSummaryContent.add(Box.createVerticalStrut(2));
-    moodSummaryContent.add(fillMoodButton);
-    moodSummaryContent.revalidate();
-    moodSummaryContent.repaint();
-}
 
 /**
  * Mengadaptasi List ActivitySuggestion milik Anda agar tampil pas pada layout Home
@@ -423,22 +444,26 @@ private void renderRecommendationsLocal(List<senandika.UILayer.ActivitySuggestio
     private void loadAllData() {
     // 1. Ambil Data Profil Pengguna (Sinkronus - String JSON)
     try {
-        String profileJson = profileService.getProfile();
-        // Cek jika response tidak kosong dan tidak error
+        String profileJson = profileService.getProfile(); 
+
         if (profileJson != null && !profileJson.trim().isEmpty() && !profileJson.startsWith("HTTP")) {
-            com.google.gson.JsonObject json = com.google.gson.JsonParser.parseString(profileJson).getAsJsonObject();
+            com.google.gson.JsonObject jsonNodeUtama = com.google.gson.JsonParser.parseString(profileJson).getAsJsonObject();
             
-            // Ambil nama dari fullName, jika kosong gunakan username
-            String displayName = "";
-            if (json.has("fullName") && !json.get("fullName").isJsonNull()) {
-                displayName = json.get("fullName").getAsString();
-            }
-            if (displayName.isEmpty() && json.has("username") && !json.get("username").isJsonNull()) {
-                displayName = json.get("username").getAsString();
-            }
-            
-            if (!displayName.isEmpty()) {
-                greeting.setText("<html>Halo " + displayName + ",<br>senang melihatmu hari ini ^_^</html>");
+            if (jsonNodeUtama.has("data") && !jsonNodeUtama.get("data").isJsonNull()) {
+                com.google.gson.JsonObject json = jsonNodeUtama.getAsJsonObject("data");
+                
+                String displayName = "";
+                
+                // Ambil full_name atau username dari dalam objek data
+                if (json.has("full_name") && !json.get("full_name").isJsonNull()) {
+                    displayName = json.get("full_name").getAsString();
+                } else if (json.has("username") && !json.get("username").isJsonNull()) {
+                    displayName = json.get("username").getAsString();
+                }
+                
+                if (!displayName.isEmpty()) {
+                    greeting.setText("<html>Halo, " + displayName + "<br>senang melihatmu hari ini ^_^</html>");
+                }
             }
         }
     } catch (Exception e) {
@@ -451,8 +476,10 @@ private void renderRecommendationsLocal(List<senandika.UILayer.ActivitySuggestio
         if (moodHistory != null && !moodHistory.isEmpty()) {
             Mood latestMood = moodHistory.get(moodHistory.size() - 1);
             renderMoodSummaryLocal(latestMood);
+            dailyInsightCard.updateByMood(latestMood.getTingkatMood());
         } else {
             renderMoodSummaryLocal(null);
+            dailyInsightCard.updateByMood(4);
         }
     } catch (Exception e) {
         renderMoodSummaryError();
@@ -476,9 +503,7 @@ private void renderRecommendationsLocal(List<senandika.UILayer.ActivitySuggestio
         wellnessProgressCard.setUnavailable();
     }
 }
-
-
-    
+ 
 
     /**
      * This method is called from within the constructor to initialize the form.

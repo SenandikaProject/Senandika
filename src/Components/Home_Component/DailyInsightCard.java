@@ -1,136 +1,69 @@
 package Components.Home_Component;
 
 import Components.RoundedPanel;
-import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import senandika.FontManager;
 
 public class DailyInsightCard extends RoundedPanel {
 
-    private static final String[] QUOTES = {
-        "Setiap langkah kecil yang kamu ambil hari ini tetap merupakan sebuah kemajuan.",
-        "Tidak apa-apa untuk beristirahat. Kamu tidak harus selalu kuat setiap saat.",
-        "Perasaanmu valid, apapun itu. Beri dirimu ruang untuk merasakannya.",
-        "Kemajuan tidak selalu terlihat. Kadang ia tumbuh diam-diam di dalam dirimu.",
-        "Hari ini cukup melakukan yang kamu bisa. Itu sudah lebih dari cukup.",
-        "Bernapaslah. Kamu sudah melalui hari-hari sulit sebelumnya, dan kamu bisa lagi."
-    };
-
     private JLabel quoteLabel;
 
     public DailyInsightCard() {
-        this(randomQuote());
-    }
-
-    public DailyInsightCard(String quote) {
-        initComponents(quote);
+        initComponents("Apapun suasana hatimu hari ini, perasaanmu berharga. Tetap melangkah pelan-pelan ya.");
     }
 
     private void initComponents(String quote) {
-
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
         setOpaque(true);
         setBackground(Color.WHITE);
 
         setBorder(
             BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(
-                    new Color(235, 235, 235),
-                    1,
-                    true
-                ),
-                BorderFactory.createEmptyBorder(
-                    18,
-                    20,
-                    18,
-                    20
-                )
+                BorderFactory.createLineBorder(new Color(235, 235, 235), 1, true),
+                BorderFactory.createEmptyBorder(16, 20, 16, 20)
             )
         );
 
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setOpaque(false);
+        // Mengubah tag HTML menjadi rata kiri (<p align='left'>) dan SwingConstants.LEFT
+        quoteLabel = new JLabel("<html><p align='left'>" + quote + "</p></html>", SwingConstants.LEFT);
+        quoteLabel.setFont(FontManager.getPoppins(12.5f).deriveFont(Font.PLAIN));
+        quoteLabel.setForeground(new Color(71, 85, 105));
 
-        JLabel iconLabel = new JLabel("✨");
-        iconLabel.setFont(
-            FontManager.getPoppins(20f)
-        );
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST; // Mengunci posisi komponen di sebelah kiri
 
-        iconLabel.setBorder(
-            BorderFactory.createEmptyBorder(
-                0,
-                0,
-                10,
-                0
-            )
-        );
-
-        quoteLabel = new JLabel(
-            "<html><div style='width:260px;'>"
-            + quote +
-            "</div></html>"
-        );
-
-        quoteLabel.setVerticalAlignment(
-            SwingConstants.TOP
-        );
-
-        quoteLabel.setFont(
-            FontManager.getPoppins(13f)
-                .deriveFont(Font.PLAIN)
-        );
-
-        quoteLabel.setForeground(
-            new Color(71, 85, 105)
-        );
-
-        contentPanel.add(
-            iconLabel,
-            BorderLayout.NORTH
-        );
-
-        contentPanel.add(
-            quoteLabel,
-            BorderLayout.CENTER
-        );
-
-        add(
-            contentPanel,
-            BorderLayout.CENTER
-        );
-
-        setPreferredSize(
-            new Dimension(
-                320,
-                120
-            )
-        );
+        add(quoteLabel, gbc);
+        setPreferredSize(new Dimension(344, 110));
     }
 
-    public void setQuote(String quote) {
+    public void updateByMood(int tingkatMood) {
+        String teksSapaanClara = "Apapun suasana hatimu hari ini, perasaanmu berharga. Tetap melangkah pelan-pelan ya.";
 
-        quoteLabel.setText(
-            "<html><div style='width:260px;'>"
-            + quote +
-            "</div></html>"
-        );
-    }
+        if (tingkatMood == 1) {
+            teksSapaanClara = "Perasaanmu valid, apapun itu. Beri dirimu ruang untuk merasakannya. Clara ada di sini menemani.";
+        } else if (tingkatMood == 2) {
+            teksSapaanClara = "Hari yang terasa sepi ya? Tidak apa-apa untuk rehat sejenak. Ambil napas dalam-dalam, kamu sudah berusaha.";
+        } else if (tingkatMood == 3) {
+            teksSapaanClara = "Rasanya kesal sekali, ya? Salurkan energimu pelan-pelan. Tarik napas... embuskan. Semua akan mereda.";
+        } else if (tingkatMood == 4) {
+            teksSapaanClara = "Senang melihatmu tersenyum! Pertahankan energi positif ini dan bagikan kebahagiaanmu hari ini!";
+        } else if (tingkatMood == 5) {
+            teksSapaanClara = "Wah, harimu penuh warna! Semoga keceriaan yang luar biasa ini terus bertahan menemani aktivitas serumu!";
+        }
 
-    public static String randomQuote() {
-
-        Random random = new Random();
-
-        return QUOTES[
-            random.nextInt(
-                QUOTES.length
-            )
-        ];
+        // Memastikan teks baru tetap rata kiri
+        quoteLabel.setText("<html><p align='left'>" + teksSapaanClara + "</p></html>");
     }
 }

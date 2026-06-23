@@ -10,6 +10,7 @@ public class Mood {
     private String tanggal;       // ISO date string, e.g. "2026-06-20"
     private int tingkatMood;      // 1..5
     private String catatan;
+    private String createdAt;
 
     public Mood() {
     }
@@ -35,6 +36,14 @@ public class Mood {
 
     public void setTanggal(String tanggal) {
         this.tanggal = tanggal;
+    }
+    
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     public int getTingkatMood() {

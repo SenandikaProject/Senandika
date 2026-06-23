@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -20,230 +21,78 @@ import senandika.FontManager;
  * MoodButton
  * Digunakan pada halaman Mood untuk memilih mood pengguna.
  */
-public class MoodButton extends JPanel {
+public class MoodButton extends JLabel {
 
     public interface OnSelectListener {
         void onSelect(int level);
     }
 
     private final int level;
-    private final String emoji;
-
-    private boolean selected = false;
-    private boolean hovered = false;
-
+    private boolean isSelected = false;
+    private ImageIcon iconGray;
+    private ImageIcon iconPurple;
     private OnSelectListener listener;
 
-    private JLabel emojiLabel;
+    public MoodButton(int level, String placeholderText) {
+    this.level = level;
+    
+        setPreferredSize(new Dimension(50, 50));
+        setMinimumSize(new Dimension(50, 50));
 
-    public MoodButton(
-            int level,
-            String emoji
-    ) {
+        // Mengizinkan penangkapan event grafis di atas panel transparan
+        setOpaque(false); 
 
-        this.level = level;
-        this.emoji = emoji;
+        try {
+            java.net.URL grayURL = getClass().getClassLoader().getResource("Asset/aset-utama/mood" + level + "-gray.png");
+            java.net.URL purpleURL = getClass().getClassLoader().getResource("Asset/aset-utama/mood" + level + "-purple.png");
 
-        initComponents();
-        initListeners();
-    }
+            if (grayURL != null && purpleURL != null) {
+                iconGray = new ImageIcon(grayURL);
+                iconPurple = new ImageIcon(purpleURL);
+                setIcon(iconGray);
+                setText(""); 
+            } else {
+                setText(placeholderText);
+            }
+        } catch (Exception e) {
+            setText(placeholderText);
+            setFont(senandika.FontManager.getPoppins(13f));
+        }
 
-    private void initComponents() {
+        setHorizontalAlignment(JLabel.CENTER);
+        setVerticalAlignment(JLabel.CENTER); // Pastikan posisi vertikalnya di tengah
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        setOpaque(false);
-
-        setLayout(
-            new BorderLayout()
-        );
-
-        setCursor(
-            new Cursor(
-                Cursor.HAND_CURSOR
-            )
-        );
-
-        setPreferredSize(
-            new Dimension(
-                72,
-                84
-            )
-        );
-
-        emojiLabel = new JLabel(
-            emoji,
-            SwingConstants.CENTER
-        );
-
-        emojiLabel.setFont(
-            FontManager.getPoppins(30f)
-        );
-
-        add(
-            emojiLabel,
-            BorderLayout.CENTER
-        );
-    }
-
-    private void initListeners() {
-
-        addMouseListener(
-            new MouseAdapter() {
-
-                @Override
-                public void mouseEntered(
-                        MouseEvent e
-                ) {
-
-                    hovered = true;
-                    repaint();
-                }
-
-                @Override
-                public void mouseExited(
-                        MouseEvent e
-                ) {
-
-                    hovered = false;
-                    repaint();
-                }
-
-                @Override
-                public void mouseClicked(
-                        MouseEvent e
-                ) {
-
-                    if (listener != null) {
-
-                        listener.onSelect(
-                            level
-                        );
-                    }
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (listener != null) {
+                    listener.onSelect(level);
                 }
             }
-        );
-    }
-
-    public void setOnSelect(
-            OnSelectListener listener
-    ) {
-
-        this.listener = listener;
+        });
     }
 
     public int getLevel() {
-
         return level;
     }
 
-    public boolean isSelected() {
-
-        return selected;
+    public void setOnSelect(OnSelectListener listener) {
+        this.listener = listener;
     }
 
-    public void setSelected(
-            boolean selected
-    ) {
-
-        this.selected = selected;
-
-        emojiLabel.setFont(
-            FontManager.getPoppins(
-                selected ? 36f : 30f
-            )
-        );
-
-        repaint();
-    }
-
-    @Override
-    protected void paintComponent(
-            Graphics g
-    ) {
-
-        Graphics2D g2 =
-                (Graphics2D) g.create();
-
-        g2.setRenderingHint(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON
-        );
-
-        int width = getWidth();
-        int height = getHeight();
-
-        int radius = 18;
-
-        Color fillColor;
-
-        if (selected) {
-
-            fillColor =
-                    new Color(
-                        241,
-                        236,
-                        255
-                    );
-
-        } else if (hovered) {
-
-            fillColor =
-                    new Color(
-                        248,
-                        245,
-                        255
-                    );
-
+    /**
+     * Mengubah icon secara dinamis saat status tombol dipilih/dilepas
+     */
+    public void setSelected(boolean selected) {
+        this.isSelected = selected;
+        if (iconPurple != null && iconGray != null) {
+            // Jika selected ganti ke ungu, jika tidak kembalikan ke abu-abu
+            setIcon(isSelected ? iconPurple : iconGray);
         } else {
-
-            fillColor =
-                    new Color(
-                        250,
-                        250,
-                        250
-                    );
+            // Fallback warna teks jika menggunakan aset font teks biasa
+            setForeground(isSelected ? new java.awt.Color(137, 126, 255) : java.awt.Color.GRAY);
         }
-
-        g2.setColor(
-            fillColor
-        );
-
-        g2.fillRoundRect(
-            2,
-            2,
-            width - 4,
-            height - 4,
-            radius,
-            radius
-        );
-
-        if (selected) {
-
-            g2.setColor(
-                new Color(
-                    137,
-                    126,
-                    255
-                )
-            );
-
-            g2.setStroke(
-                new BasicStroke(
-                    2.2f
-                )
-            );
-
-            g2.drawRoundRect(
-                2,
-                2,
-                width - 5,
-                height - 5,
-                radius,
-                radius
-            );
-        }
-
-        g2.dispose();
-
-        super.paintComponent(g);
+        repaint();
     }
 }

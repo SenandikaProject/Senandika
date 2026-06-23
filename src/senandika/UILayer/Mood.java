@@ -145,7 +145,8 @@ public class Mood extends javax.swing.JFrame {
 
         int[] levels = {1, 2, 3, 4, 5};
         for (int i = 0; i < levels.length; i++) {
-            MoodButton button = new MoodButton(levels[i], getEmojiFor(levels[i]));
+            // Parameter kedua tetap dilelempar sebagai teks cadangan (fallback) jika sistem gagal memuat PNG
+            MoodButton button = new MoodButton(levels[i], getLabelFor(levels[i]));
             button.setOnSelect(this::selectMood);
             moodButtons.add(button);
             buttonsRow.add(button);
@@ -213,9 +214,9 @@ public class Mood extends javax.swing.JFrame {
 
         JPanel gridStats = new JPanel(new MigLayout("insets 0, gap 10", "[grow,fill][grow,fill][grow,fill]"));
         gridStats.setOpaque(false);
-        avgCard = new MoodStatisticsCard("⭐", "Rata-rata");
-        highCard = new MoodStatisticsCard("📈", "Tertinggi");
-        lowCard = new MoodStatisticsCard("📉", "Terendah");
+        avgCard = new MoodStatisticsCard("AVG", "Rata-rata");
+        highCard = new MoodStatisticsCard("HIGH", "Tertinggi");
+        lowCard = new MoodStatisticsCard("LOW", "Terendah");
         gridStats.add(avgCard);
         gridStats.add(highCard);
         gridStats.add(lowCard);
@@ -232,34 +233,13 @@ public class Mood extends javax.swing.JFrame {
         historyContent = new JPanel();
         historyContent.setOpaque(false);
         historyContent.setLayout(new BoxLayout(historyContent, BoxLayout.Y_AXIS));
-        content.add(historyContent, new AbsoluteConstraints(24, currentY, 344, -1)); // Mengembang sesuai data
-        
-        // Sengaja ditumpuk di koordinat aman di bawah list riwayat yang nanti dikalkulasi ulang
-        int chartYAnchor = currentY + 120; 
-
-        // ---- 7. DISTRIBUTION SECTION ----
-        JLabel distTitle = new JLabel("Distribusi Mood");
-        distTitle.setFont(FontManager.getPoppins(15f).deriveFont(Font.BOLD));
-        distTitle.setForeground(new Color(30, 41, 59));
-        content.add(distTitle, new AbsoluteConstraints(28, chartYAnchor, 340, 25));
-
-        RoundedPanel chartCard = new RoundedPanel(16, Color.WHITE, true);
-        chartCard.setLayout(new BorderLayout());
-        chartCard.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(235, 235, 235), 1, true),
-                BorderFactory.createEmptyBorder(12, 12, 12, 12)
-        ));
-        distributionChart = new MoodDistributionChart();
-        chartCard.add(distributionChart, BorderLayout.CENTER);
-        content.add(chartCard, new AbsoluteConstraints(24, chartYAnchor + 30, 344, 150));
-
-        // Set tinggi awal frame kontainer scroll
-        content.setPreferredSize(new Dimension(398, chartYAnchor + 210));
+        content.add(historyContent, new AbsoluteConstraints(24, currentY, 344, -1));
     }
 
     private void selectMood(int level) {
         selectedMoodLevel = level;
         for (MoodButton button : moodButtons) {
+            // Baris ini memicu method setSelected di MoodButton untuk menukar warna icon
             button.setSelected(button.getLevel() == level);
         }
         selectedMoodText.setText("Hari ini kamu merasa " + getLabelFor(level));
@@ -267,119 +247,189 @@ public class Mood extends javax.swing.JFrame {
     }
 
     private void executeSubmitMood() {
-    if (selectedMoodLevel == 0) return;
-    submitButton.setEnabled(false);
-    submitStatusLabel.setText("Menyimpan...");
+        if (selectedMoodLevel == 0) return;
+        submitButton.setEnabled(false);
+        submitStatusLabel.setText("Menyimpan...");
 
-    try {
-        String catatanInput = notesArea.getText().trim();
-        String tanggalHariIni = LocalDate.now().toString(); // format "yyyy-MM-dd"
-        int generateId = (int) (System.currentTimeMillis() / 1000L); // ID integer kustom aman
+        try {
+            String catatanInput = notesArea.getText().trim();
+            
+            java.time.ZonedDateTime zonasiWaktu = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Singapore"));
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String tanggalHariIni = zonasiWaktu.format(formatter); 
 
-        // Instansiasi langsung ke Model asli Anda
-        senandika.Model.Mood newEntry = new senandika.Model.Mood(
-                generateId,
-                tanggalHariIni,
-                selectedMoodLevel,
-                catatanInput
-        );
+            // Membuat objek Model data
+            senandika.Model.Mood newEntry = new senandika.Model.Mood();
+            newEntry.setTanggal(tanggalHariIni); // Sekarang mengirim "2026-06-22 17:xx:xx"
+            newEntry.setTingkatMood(selectedMoodLevel);
+            newEntry.setCatatan(catatanInput);
 
-        moodService.addMood(newEntry);
-        
-        submitStatusLabel.setForeground(new Color(137, 126, 255));
-        submitStatusLabel.setText("Mood berhasil disimpan ✓");
-        notesArea.setText("");
-        
-        loadAllMoodData();
-    } catch (Exception ex) {
-        submitStatusLabel.setForeground(new Color(239, 68, 68));
-        submitStatusLabel.setText("Gagal menyimpan data.");
-    } finally {
-        submitButton.setEnabled(true);
+            // Mengirim data langsung ke database melalui Service Layer API
+            String result = moodService.addMood(newEntry);
+
+            // Cek jika response sukses (tidak membalas pesan error HTTP)
+            if (result != null && !result.toLowerCase().contains("error")) {
+                // Bersihkan label status di bawah tombol
+                submitStatusLabel.setText(" "); 
+                notesArea.setText("");
+
+                // Tampilkan JOptionPane sukses
+                javax.swing.JOptionPane.showMessageDialog(
+                    this, 
+                    "Mood berhasil disimpan!", 
+                    "Sukses", 
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE
+                );
+
+                // Segarkan grafik distribusi chart dan statistik dari database terbaru
+                loadAllMoodData();
+            } else {
+                submitStatusLabel.setText(" "); 
+                
+                javax.swing.JOptionPane.showMessageDialog(
+                    this, 
+                    "Gagal menyimpan ke server backend.", 
+                    "Error", 
+                    javax.swing.JOptionPane.ERROR_MESSAGE
+                );
+            }
+        } catch (Exception ex) {
+            submitStatusLabel.setForeground(new Color(239, 68, 68));
+            submitStatusLabel.setText("Koneksi gagal: " + ex.getMessage());
+        } finally {
+            submitButton.setEnabled(true);
+        }
     }
-}
 
     private void loadAllMoodData() {
+        // PASTIKAN object chart diinisialisasi pertama kali jika masih null agar tidak memicu NullPointerException
+        if (distributionChart == null) {
+            distributionChart = new MoodDistributionChart();
+        }
+
         // 1. Sinkronisasi Data Riwayat ke Komponen UI
-try {
-    historyContent.removeAll();
-    List<senandika.Model.Mood> listData = moodService.getMoodHistory();
-    
-    if (listData == null || listData.isEmpty()) {
-        historyContent.add(new EmptyStatePanel("📝", "Belum ada riwayat", "Catat mood pertamamu!"));
-    } else {
-        // Kita bungkus ke model internal Claude untuk mencocokkan component chart & timeline
-        List<senandika.Model.Mood> bridgeList = new ArrayList<>();
-        for (senandika.Model.Mood m : listData) {
-            senandika.Model.Mood bridge = new senandika.Model.Mood();
-            bridge.setTingkatMood(m.getTingkatMood());
-            
-            // Mengonversi data ke String secara aman menggunakan String.valueOf() atau .toString()
-            bridge.setTanggal(m.getTanggal() != null ? m.getTanggal().toString() : ""); 
-            bridge.setCatatan(m.getCatatan() != null ? m.getCatatan() : ""); 
-            
-            bridgeList.add(bridge);
-        }
+        try {
+            historyContent.removeAll();
+            List<senandika.Model.Mood> listData = moodService.getMoodHistory();
 
-        int addedCount = 0;
-        for (int i = bridgeList.size() - 1; i >= 0; i--) {
-            if (addedCount > 0) historyContent.add(Box.createVerticalStrut(10));
-            historyContent.add(new MoodHistoryCard(bridgeList.get(i)));
-            if (++addedCount >= 3) break; // Ambil maksimal 3 histori teratas agar proporsional
-        }
-        
-        // Distribusikan data chart
-        distributionChart.setMoods(bridgeList);
-    }
-} catch (Exception e) {
-    System.out.println("Gagal memuat histori: " + e.getMessage());
-}
+            if (listData == null || listData.isEmpty()) {
+                historyContent.add(new EmptyStatePanel("📝", "Belum ada riwayat", "Catat mood pertamamu!"));
+            } else {
+                // Kita bungkus ke model internal Claude untuk mencocokkan component chart & timeline
+                List<senandika.Model.Mood> bridgeList = new ArrayList<>();
+                for (senandika.Model.Mood m : listData) {
+                    senandika.Model.Mood bridge = new senandika.Model.Mood();
+                    bridge.setTingkatMood(m.getTingkatMood());
 
-    // 2. Kalkulasi Nilai Rata-rata dari Method Sinkronus Anda
-    try {
-        double avg = moodService.getAverageMood();
-        avgCard.setValue(String.format("%.1f", avg));
-        
-        List<senandika.Model.Mood> data = moodService.getMoodHistory();
-        if (data != null && !data.isEmpty()) {
-            int max = 1, min = 5;
-            for (senandika.Model.Mood m : data) {
-                if (m.getTingkatMood() > max) max = m.getTingkatMood();
-                if (m.getTingkatMood() < min) min = m.getTingkatMood();
+                    bridge.setTanggal(m.getCreatedAt() != null ? m.getCreatedAt() : "");
+                    bridge.setCatatan(m.getCatatan() != null ? m.getCatatan() : ""); 
+
+                    bridgeList.add(bridge);
+                }
+
+                int addedCount = 0;
+                for (int i = bridgeList.size() - 1; i >= 0; i--) {
+                    if (addedCount > 0) historyContent.add(Box.createVerticalStrut(10));
+
+                    // Buat card riwayat baru menggunakan objek data bridge yang sudah bersih dari emoji silang
+                    historyContent.add(new MoodHistoryCard(bridgeList.get(i)));
+                    if (++addedCount >= 3) break; 
+                }
+
+                // Distribusikan data chart tanpa takut memunculkan kotak silang di sumbu X grafik
+                distributionChart.setMoods(bridgeList);
             }
-            highCard.setValue(getEmojiFor(max));
-            lowCard.setValue(getEmojiFor(min));
-        } else {
-            highCard.setValue("-");
-            lowCard.setValue("-");
+        } catch (Exception e) {
+            System.out.println("Gagal memuat histori: " + e.getMessage());
         }
-    } catch (Exception e) {
-        avgCard.setValue("-");
-    }
 
+        // 2. Kalkulasi Nilai Rata-rata dari Method Sinkronus Anda
+        try {
+            double avg = moodService.getAverageMood();
+            avgCard.setValue(String.format("%.1f", avg));
+            
+            List<senandika.Model.Mood> data = moodService.getMoodHistory();
+            if (data != null && !data.isEmpty()) {
+                int max = 1, min = 5;
+                for (senandika.Model.Mood m : data) {
+                    if (m.getTingkatMood() > max) max = m.getTingkatMood();
+                    if (m.getTingkatMood() < min) min = m.getTingkatMood();
+                }
+                // Ganti getEmojiFor menjadi getLabelFor agar memunculkan kata teks (misal: "Senang")
+                highCard.setValue(getLabelFor(max));
+                lowCard.setValue(getLabelFor(min));
+            } else {
+                highCard.setValue("-");
+                lowCard.setValue("-");
+            }
+        } catch (Exception e) {
+            avgCard.setValue("-");
+        }
+
+        // 3. KALKULASI VERTIKAL SECARA MANDIRI & AMAN
         historyContent.revalidate();
         historyContent.repaint();
+
+        int historyY = 620; 
+        int historyHeight = historyContent.getPreferredSize().height;
+        int chartYAnchor = historyY + (historyHeight > 0 ? historyHeight : 80) + 25;
+
+        // Gunakan mekanisme penandaan component target agar penghapusan komponen lama tidak merusak reference parent container
+        java.awt.Component targetTitle = null;
+        java.awt.Component targetCard = null;
+
+        for (java.awt.Component comp : content.getComponents()) {
+            if (comp != null && comp.getName() != null) {
+                if ("distTitleLabel".equals(comp.getName())) targetTitle = comp;
+                if ("chartCardPanel".equals(comp.getName())) targetCard = comp;
+            }
+        }
+        if (targetTitle != null) content.remove(targetTitle);
+        if (targetCard != null) content.remove(targetCard);
+
+        // Pasang ulang judul Distribusi Mood secara dinamis
+        JLabel distTitle = new JLabel("Distribusi Mood");
+        distTitle.setName("distTitleLabel");
+        distTitle.setFont(FontManager.getPoppins(15f).deriveFont(Font.BOLD));
+        distTitle.setForeground(new Color(30, 41, 59));
+        content.add(distTitle, new AbsoluteConstraints(28, chartYAnchor, 340, 25));
+
+        // Pasang ulang kartu grafik Distribusi secara dinamis
+        RoundedPanel chartCard = new RoundedPanel(16, Color.WHITE, true);
+        chartCard.setName("chartCardPanel");
+        chartCard.setLayout(new BorderLayout());
+        chartCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(235, 235, 235), 1, true),
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)
+        ));
+        chartCard.add(distributionChart, BorderLayout.CENTER);
+        content.add(chartCard, new AbsoluteConstraints(24, chartYAnchor + 30, 344, 150));
+
+        // Memperpanjang ukuran preferred scroll area content mengikuti batas paling bawah grafik
+        content.setPreferredSize(new Dimension(398, chartYAnchor + 210));
+        content.revalidate();
+        content.repaint();
     }
 
     private static String getEmojiFor(int level) {
         switch (level) {
-            case 1: return "😢";
-            case 2: return "🙁";
-            case 3: return "😐";
-            case 4: return "🙂";
-            case 5: return "😁";
-            default: return "😐";
+            case 1: return "LV1";
+            case 2: return "LV2";
+            case 3: return "LV3";
+            case 4: return "LV4";
+            case 5: return "LV5";
+            default: return "LV3";
         }
     }
 
     private static String getLabelFor(int level) {
         switch (level) {
-            case 1: return "Sangat Sedih";
-            case 2: return "Sedih";
-            case 3: return "Biasa Aja";
+            case 1: return "Sedih";
+            case 2: return "Murung";
+            case 3: return "Marah";
             case 4: return "Senang";
-            case 5: return "Sangat Senang";
-            default: return "Biasa Aja";
+            case 5: return "Ceria";
+            default: return "Senang";
         }
     }
 
