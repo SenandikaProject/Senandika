@@ -58,7 +58,7 @@ public class MoodHistoryCard extends RoundedPanel {
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
 
         // Menampilkan label kustom baru (Sedih, Murung, Marah, Senang, Ceria)
-        JLabel moodLabel = new JLabel(mood.getMoodLabel());
+        JLabel moodLabel = new JLabel(getLabelFor(mood.getTingkatMood()));
         moodLabel.setFont(FontManager.getPoppins(14f).deriveFont(Font.BOLD));
         moodLabel.setForeground(new Color(30, 41, 59));
         moodLabel.setAlignmentX(LEFT_ALIGNMENT);
@@ -127,6 +127,17 @@ public class MoodHistoryCard extends RoundedPanel {
 
         } catch (Exception e) {
             return isoDate; // Fallback aman jika gagal parsing
+        }
+    }
+    
+        private static String getLabelFor(int level) {
+        switch (level) {
+            case 1: return "Sedih";
+            case 2: return "Murung";
+            case 3: return "Marah";
+            case 4: return "Senang";
+            case 5: return "Ceria";
+            default: return "Senang";
         }
     }
 }

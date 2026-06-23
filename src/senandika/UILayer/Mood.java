@@ -315,28 +315,33 @@ public class Mood extends javax.swing.JFrame {
             if (listData == null || listData.isEmpty()) {
                 historyContent.add(new EmptyStatePanel("📝", "Belum ada riwayat", "Catat mood pertamamu!"));
             } else {
-                // Kita bungkus ke model internal Claude untuk mencocokkan component chart & timeline
                 List<senandika.Model.Mood> bridgeList = new ArrayList<>();
                 for (senandika.Model.Mood m : listData) {
                     senandika.Model.Mood bridge = new senandika.Model.Mood();
                     bridge.setTingkatMood(m.getTingkatMood());
-
-                    bridge.setTanggal(m.getCreatedAt() != null ? m.getCreatedAt() : "");
+                    
+                    // PERBAIKAN: Menggunakan nama method asli m.getId() dan bridge.setId()
+                    bridge.setId(m.getId()); 
+                    
+                    // Gunakan getCreatedAt() dari service agar jam presisi milidetik ikut terbaca
+                    bridge.setTanggal(m.getCreatedAt() != null ? m.getCreatedAt() : m.getTanggal());
                     bridge.setCatatan(m.getCatatan() != null ? m.getCatatan() : ""); 
 
                     bridgeList.add(bridge);
                 }
 
+                // Urutkan list berdasarkan nilai integer ID (Kecil ke Besar)
+                bridgeList.sort((m1, m2) -> Integer.compare(m1.getId(), m2.getId()));
+
+                // LOOP MUNDUR: Mengambil 3 data mutlak dari tumpukan paling bawah (ID Terbesar)
                 int addedCount = 0;
                 for (int i = bridgeList.size() - 1; i >= 0; i--) {
                     if (addedCount > 0) historyContent.add(Box.createVerticalStrut(10));
 
-                    // Buat card riwayat baru menggunakan objek data bridge yang sudah bersih dari emoji silang
                     historyContent.add(new MoodHistoryCard(bridgeList.get(i)));
                     if (++addedCount >= 3) break; 
                 }
 
-                // Distribusikan data chart tanpa takut memunculkan kotak silang di sumbu X grafik
                 distributionChart.setMoods(bridgeList);
             }
         } catch (Exception e) {

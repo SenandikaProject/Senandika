@@ -46,6 +46,12 @@ public class JournalCard extends JPanel {
             if (allJournals.isEmpty()) {
                 contentPanel.add(new JournalEmptyState(parentFrame));
             } else {
+                // ====================================================================
+                // URUTKAN DATA BERDASARKAN ID JURNAL SECARA DESCENDING (Terbaru di Atas)
+                // ====================================================================
+                allJournals.sort((j1, j2) -> Integer.compare(j2.getId(), j1.getId()));
+                // ====================================================================
+
                 // 1. Pasang Kartu Streak
                 int streak = service.getStreak();
                 streakCard = new JournalStreakCard();
@@ -95,7 +101,7 @@ public class JournalCard extends JPanel {
                 controlWrapper.add(filterBar, BorderLayout.EAST);
                 contentPanel.add(controlWrapper);
                 contentPanel.add(Box.createVerticalStrut(20));
-
+                
                 // Container list jurnal
                 listJurnalContainer = new JPanel();
                 listJurnalContainer.setOpaque(false);
@@ -112,26 +118,20 @@ public class JournalCard extends JPanel {
                     listJurnalContainer.removeAll();
 
                     if (query.isEmpty()) {
-                        // Jika kolom pencarian kosong, tampilkan kembali semua data yang ada
                         for (JournalData journal : masterJournals) {
                             JournalItemCard card = new JournalItemCard();
                             card.setData(journal.getId(), journal.getJudul(), journal.getTanggal());
-                            
                             setupCardActions(card);
-                            
                             listJurnalContainer.add(card);
                             listJurnalContainer.add(Box.createVerticalStrut(15));
                         }
                     } else {
-                        // Filter di memori Java berdasarkan judul yang mengandung kata kunci
                         int matchCount = 0;
                         for (JournalData journal : masterJournals) {
                             if (journal.getJudul().toLowerCase().contains(query)) {
                                 JournalItemCard card = new JournalItemCard();
                                 card.setData(journal.getId(), journal.getJudul(), journal.getTanggal());
-                                
                                 setupCardActions(card);
-                                
                                 listJurnalContainer.add(card);
                                 listJurnalContainer.add(Box.createVerticalStrut(15));
                                 matchCount++;
@@ -163,14 +163,14 @@ public class JournalCard extends JPanel {
 
                     if (konfirmasi == JOptionPane.YES_OPTION) {
                         try {
-                            //Ambil data terfilter dari API backend
                             List<JournalData> filteredJournals = service.getFilteredJournals(selectedFilter, "");
 
-                            //Sinkronkan list master lokal aplikasi agar fitur search juga merujuk ke data baru ini
+                            // Pastikan data hasil filter dari backend juga ikut diurutkan ke yang terbaru
+                            filteredJournals.sort((j1, j2) -> Integer.compare(j2.getId(), j1.getId()));
+
                             allJournals.clear();
                             allJournals.addAll(filteredJournals);
 
-                            //Bersihkan dan gambar ulang UI list container
                             listJurnalContainer.removeAll();
 
                             if (filteredJournals.isEmpty()) {
@@ -182,17 +182,13 @@ public class JournalCard extends JPanel {
                             } else {
                                 for (JournalData journal : filteredJournals) {
                                     JournalItemCard card = new JournalItemCard();
-                                    // Gunakan data jurnal hasil filter backend
                                     card.setData(journal.getId(), journal.getJudul(), journal.getTanggal());
-                                    
                                     setupCardActions(card);
-                                    
                                     listJurnalContainer.add(card);
                                     listJurnalContainer.add(Box.createVerticalStrut(15));
                                 }
                             }
 
-                            //Paksa Swing untuk merender ulang perubahan ke layar
                             listJurnalContainer.revalidate();
                             listJurnalContainer.repaint();
                             contentPanel.revalidate();
@@ -205,13 +201,11 @@ public class JournalCard extends JPanel {
                     }
                 });
 
-                // Tampilkan data awal secara utuh saat pertama kali dimuat
+                // Tampilkan data awal secara utuh saat pertama kali dimuat (Sudah urut DESC)
                 for (JournalData journal : allJournals) {
                     JournalItemCard card = new JournalItemCard();
                     card.setData(journal.getId(), journal.getJudul(), journal.getTanggal());
-                    
                     setupCardActions(card);
-                    
                     listJurnalContainer.add(card);
                     listJurnalContainer.add(Box.createVerticalStrut(15));
                 }
