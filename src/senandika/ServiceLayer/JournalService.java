@@ -71,29 +71,13 @@ public class JournalService {
     }
 
     public List<JournalData> getJournals() throws Exception {
-
         URL url = new URL(BASE_URL);
-
-        HttpURLConnection conn =
-                (HttpURLConnection) url.openConnection();
-
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + Session.TOKEN);
 
-        conn.setRequestProperty(
-                "Authorization",
-                "Bearer " + Session.TOKEN
-        );
-
-        BufferedReader br =
-                new BufferedReader(
-                        new InputStreamReader(
-                                conn.getInputStream()
-                        )
-                );
-
-        StringBuilder response =
-                new StringBuilder();
-
+        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder response = new StringBuilder();
         String line;
 
         while ((line = br.readLine()) != null) {
@@ -102,57 +86,26 @@ public class JournalService {
 
         System.out.println(response.toString());
 
-        JsonArray data =
-                JsonParser.parseString(
-                        response.toString()
-                ).getAsJsonArray();
-
-        List<JournalData> journals =
-                new ArrayList<>();
+        JsonArray data = JsonParser.parseString(response.toString()).getAsJsonArray();
+        List<JournalData> journals = new ArrayList<>();
 
         for (JsonElement element : data) {
+            JsonObject obj = element.getAsJsonObject();
+            JournalData journal = new JournalData();
 
-            JsonObject obj =
-                    element.getAsJsonObject();
+            journal.setId(obj.get("id").getAsInt());
+            journal.setJudul(obj.get("judul").getAsString());
+            journal.setIsi(obj.get("isi").getAsString());
+            journal.setTanggal(obj.get("tanggal").getAsString());
+            journal.setStreak(obj.get("streak").getAsInt());
 
-            JournalData journal =
-                    new JournalData();
-
-            journal.setId(
-                    obj.get("id").getAsInt()
-            );
-
-            journal.setJudul(
-                    obj.get("judul").getAsString()
-            );
-
-            journal.setIsi(
-                    obj.get("isi").getAsString()
-            );
-
-            journal.setTanggal(
-                    obj.get("tanggal").getAsString()
-            );
-
-            journal.setStreak(
-                    obj.get("streak").getAsInt()
-            );
-
-            if(obj.has("image_path")
-                    && !obj.get("image_path").isJsonNull()) {
-
-                journal.setImagePath(
-                        obj.get("image_path")
-                                .getAsString()
-                );
+            if(obj.has("image_path") && !obj.get("image_path").isJsonNull()) {
+                journal.setImagePath(obj.get("image_path").getAsString());
             }
 
-            if(obj.has("created_at")) {
-
-                journal.setCreatedAt(
-                        obj.get("created_at")
-                                .getAsString()
-                );
+            // Memastikan penarikan data created_at aman
+            if(obj.has("created_at") && !obj.get("created_at").isJsonNull()) {
+                journal.setCreatedAt(obj.get("created_at").getAsString());
             }
 
             journals.add(journal);
@@ -162,7 +115,6 @@ public class JournalService {
     }
 
     public List<JournalData> getFilteredJournals(String filter, String searchQuery) throws Exception {
-        // Kita hanya perlu melempar filter waktu ke backend Node.js
         String encodedFilter = URLEncoder.encode(filter, "UTF-8");
         String urlString = BASE_URL + "?filter=" + encodedFilter;
 
@@ -194,6 +146,12 @@ public class JournalService {
             if (obj.has("image_path") && !obj.get("image_path").isJsonNull()) {
                 journal.setImagePath(obj.get("image_path").getAsString());
             }
+            
+            // DISESUAIKAN: Menambahkan ekstraksi created_at pada filter pencarian/waktu
+            if (obj.has("created_at") && !obj.get("created_at").isJsonNull()) {
+                journal.setCreatedAt(obj.get("created_at").getAsString());
+            }
+            
             journals.add(journal);
         }
         return journals;
@@ -216,158 +174,72 @@ public class JournalService {
         return json.get("streak").getAsInt();
     }
     
-    public JournalData getJournalById(int id)
-        throws Exception {
-
-        URL url =
-                new URL(
-                        BASE_URL + "/" + id
-                );
-
-        HttpURLConnection conn =
-                (HttpURLConnection)
-                        url.openConnection();
-
+    public JournalData getJournalById(int id) throws Exception {
+        URL url = new URL(BASE_URL + "/" + id);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + Session.TOKEN);
 
-        conn.setRequestProperty(
-                "Authorization",
-                "Bearer " + Session.TOKEN
-        );
-
-        BufferedReader br =
-                new BufferedReader(
-                        new InputStreamReader(
-                                conn.getInputStream()
-                        )
-                );
-
-        StringBuilder response =
-                new StringBuilder();
-
+        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        StringBuilder response = new StringBuilder();
         String line;
 
         while((line = br.readLine()) != null){
-
             response.append(line);
         }
 
-        JsonObject obj =
-                JsonParser.parseString(
-                        response.toString()
-                ).getAsJsonObject();
+        JsonObject obj = JsonParser.parseString(response.toString()).getAsJsonObject();
+        JournalData journal = new JournalData();
 
-        JournalData journal =
-                new JournalData();
+        journal.setId(obj.get("id").getAsInt());
+        journal.setJudul(obj.get("judul").getAsString());
+        journal.setIsi(obj.get("isi").getAsString());
+        journal.setTanggal(obj.get("tanggal").getAsString());
 
-        journal.setId(
-                obj.get("id").getAsInt()
-        );
-
-        journal.setJudul(
-                obj.get("judul").getAsString()
-        );
-
-        journal.setIsi(
-                obj.get("isi").getAsString()
-        );
-
-        journal.setTanggal(
-                obj.get("tanggal").getAsString()
-        );
-
-        journal.setImagePath(
-                obj.get("image_path").getAsString()
-        );
+        // DISESUAIKAN: Pengecekan null-safety path gambar agar tidak memicu crash NullPointerException
+        if (obj.has("image_path") && !obj.get("image_path").isJsonNull()) {
+            journal.setImagePath(obj.get("image_path").getAsString());
+        } else {
+            journal.setImagePath(null);
+        }
+        
+        if (obj.has("created_at") && !obj.get("created_at").isJsonNull()) {
+            journal.setCreatedAt(obj.get("created_at").getAsString());
+        }
 
         return journal;
     }
     
-    public void deleteJournal(int id)
-        throws Exception {
-        URL url =
-                new URL(
-                        BASE_URL + "/" + id
-                );
-
-        HttpURLConnection conn =
-                (HttpURLConnection)
-                        url.openConnection();
-
+    public void deleteJournal(int id) throws Exception {
+        URL url = new URL(BASE_URL + "/" + id);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("DELETE");
-
-        conn.setRequestProperty(
-                "Authorization",
-                "Bearer " + Session.TOKEN
-        );
+        conn.setRequestProperty("Authorization", "Bearer " + Session.TOKEN);
 
         int code = conn.getResponseCode();
-
         if(code != 200){
-
-            throw new RuntimeException(
-                    "Gagal menghapus jurnal"
-            );
+            throw new RuntimeException("Gagal menghapus jurnal");
         }
     }
     
-    public void updateJournal(
-        int id,
-        String judul,
-        String isi
-    ) throws Exception {
-
-        URL url =
-                new URL(
-                        BASE_URL + "/" + id
-                );
-
-        HttpURLConnection conn =
-                (HttpURLConnection)
-                        url.openConnection();
-
+    public void updateJournal(int id, String judul, String isi) throws Exception {
+        URL url = new URL(BASE_URL + "/" + id);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("PUT");
-
-        conn.setRequestProperty(
-                "Authorization",
-                "Bearer " + Session.TOKEN
-        );
-
-        conn.setRequestProperty(
-                "Content-Type",
-                "application/json"
-        );
-
+        conn.setRequestProperty("Authorization", "Bearer " + Session.TOKEN);
+        conn.setRequestProperty("Content-Type", "application/json");
         conn.setDoOutput(true);
 
-        JsonObject body =
-                new JsonObject();
+        JsonObject body = new JsonObject();
+        body.addProperty("judul", judul);
+        body.addProperty("isi", isi);
 
-        body.addProperty(
-                "judul",
-                judul
-        );
-
-        body.addProperty(
-                "isi",
-                isi
-        );
-
-        try(OutputStream os =
-                conn.getOutputStream()){
-
-            os.write(
-                body.toString().getBytes()
-            );
+        try(OutputStream os = conn.getOutputStream()){
+            os.write(body.toString().getBytes());
         }
 
         if(conn.getResponseCode() != 200){
-
-            throw new RuntimeException(
-                    "Gagal update jurnal"
-            );
+            throw new RuntimeException("Gagal update jurnal");
         }
     }
-    
-    
 }
