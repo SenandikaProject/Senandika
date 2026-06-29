@@ -53,16 +53,27 @@ public class JournalCard extends JPanel {
                 // ====================================================================
 
                 // 1. Pasang Kartu Streak
-                int streak = service.getStreak();
-                streakCard = new JournalStreakCard();
-                streakCard.setStreak(streak);
-                streakCard.setAlignmentX(Component.CENTER_ALIGNMENT);
-                
-                // Kalkulasi otomatis centang hari senin-minggu dari database
                 boolean[] activeDays = hitungHariAktifMingguIni(allJournals);
+
+                // Hitung streak lokal berdasarkan hari aktif berturut-turut dari hari Senin (indeks 0)
+                int streakLokal = 0;
+                for (boolean dayActive : activeDays) {
+                    if (dayActive) {
+                        streakLokal++;
+                    } else {
+                        // Opsional: hapus 'else break' jika streak dihitung dari total hari unik dalam seminggu, 
+                        // atau biarkan 'break' jika ingin streak terputus begitu ada hari yang bolong.
+                        break; 
+                    }
+                }
+
+                streakCard = new JournalStreakCard();
+                // Gunakan streakLokal hasil kalkulasi unik, bukan dari service.getStreak() yang duplikat
+                streakCard.setStreak(streakLokal); 
                 streakCard.setStreakStatus(activeDays);
-                contentPanel.add(streakCard);
+                streakCard.setAlignmentX(Component.CENTER_ALIGNMENT);
                 contentPanel.add(Box.createVerticalStrut(20));
+                contentPanel.add(streakCard);
                 
                 // 2. Pasang Tombol Tambah Jurnal
                 JPanel btnWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -120,7 +131,7 @@ public class JournalCard extends JPanel {
                     if (query.isEmpty()) {
                         for (JournalData journal : masterJournals) {
                             JournalItemCard card = new JournalItemCard();
-                            card.setData(journal.getId(), journal.getJudul(), journal.getTanggal());
+                            card.setData(journal.getId(), journal.getJudul(), journal.getCreatedAt());
                             setupCardActions(card);
                             listJurnalContainer.add(card);
                             listJurnalContainer.add(Box.createVerticalStrut(15));
@@ -130,7 +141,7 @@ public class JournalCard extends JPanel {
                         for (JournalData journal : masterJournals) {
                             if (journal.getJudul().toLowerCase().contains(query)) {
                                 JournalItemCard card = new JournalItemCard();
-                                card.setData(journal.getId(), journal.getJudul(), journal.getTanggal());
+                                card.setData(journal.getId(), journal.getJudul(), journal.getCreatedAt());
                                 setupCardActions(card);
                                 listJurnalContainer.add(card);
                                 listJurnalContainer.add(Box.createVerticalStrut(15));
@@ -182,7 +193,7 @@ public class JournalCard extends JPanel {
                             } else {
                                 for (JournalData journal : filteredJournals) {
                                     JournalItemCard card = new JournalItemCard();
-                                    card.setData(journal.getId(), journal.getJudul(), journal.getTanggal());
+                                    card.setData(journal.getId(), journal.getJudul(), journal.getCreatedAt());
                                     setupCardActions(card);
                                     listJurnalContainer.add(card);
                                     listJurnalContainer.add(Box.createVerticalStrut(15));
