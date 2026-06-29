@@ -4,222 +4,232 @@
  */
 package Components.Home_Component;
 
-import Components.RoundedButton;
-import java.awt.*;
 import javax.swing.*;
-import senandika.Model.Recommendation;
+import java.awt.*;
 import senandika.FontManager;
-
+import senandika.Model.Recommendation;
 
 public class RecommendationDetailDialog extends JDialog {
 
-    public interface OnActionListener {
-        void onAction();
+    private final Recommendation recommendation;
+
+    public RecommendationDetailDialog(Frame parent, Recommendation recommendation) {
+        super(parent, true);
+        this.recommendation = recommendation;
+        setUndecorated(true);
+        initUI();
     }
 
-    private OnActionListener onMarkComplete;
-    private OnActionListener onSaveFavorite;
+    private void initUI() {
+        setSize(394, 720);
+        setLocationRelativeTo(getOwner());
+        setBackground(new Color(0, 0, 0, 0));
 
-    public RecommendationDetailDialog(JFrame parent, Recommendation recommendation) {
-        super(parent, true);
-        setUndecorated(true);
-        setSize(380, 600);
-        setLocationRelativeTo(parent);
+        JPanel mainPanel = new RoundedPanel(20, Color.WHITE, true);
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBorder(null);
 
-        // Menggunakan Background PUTIH agar bersih dan kontras dengan teks gelap
-        RoundedPanel root = new RoundedPanel(24, Color.WHITE, false);
-        root.setLayout(new BorderLayout());
-        setContentPane(root);
+        // --- HEADER ---
+        JPanel headerArea = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        // ---- Header image dengan tombol kembali ----
-        HeaderImage header = new HeaderImage();
-        header.setPreferredSize(new Dimension(380, 220));
-        header.setLayout(new BorderLayout());
+                int w = getWidth();
+                int h = getHeight();
 
-        // Membuat tombol kembali sirkular kustom tanpa utilitas luar
-        JButton backButton = new JButton("←") {
+                try {
+                    String path = recommendation.getThumbnailUrl();
+                    if (path != null && !path.trim().isEmpty()) {
+                        // [FIX GAMBAR] Coba dua variasi path: dengan dan tanpa leading slash
+                        java.net.URL imgURL = getClass().getClassLoader().getResource(path);
+                        if (imgURL == null) {
+                            // Fallback: coba tambah slash di depan via getClass().getResource()
+                            imgURL = getClass().getResource("/" + path);
+                        }
+                        
+                        if (imgURL != null) {
+                            Image image = new ImageIcon(imgURL).getImage();
+                            int imgW = image.getWidth(this);
+                            int imgH = image.getHeight(this);
+
+                            if (imgW > 0 && imgH > 0) {
+                                double containerRatio = (double) w / h;
+                                double imageRatio = (double) imgW / imgH;
+
+                                int renderW, renderH, x = 0, y = 0;
+                                if (imageRatio > containerRatio) {
+                                    renderH = h;
+                                    renderW = (int) (h * imageRatio);
+                                    x = (w - renderW) / 2;
+                                } else {
+                                    renderW = w;
+                                    renderH = (int) (w / imageRatio);
+                                    y = (h - renderH) / 2;
+                                }
+                                g2.drawImage(image, x, y, renderW, renderH, this);
+                                g2.dispose();
+                                return; // Berhasil gambar, keluar
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // Lanjut ke fallback
+                }
+                drawFallback(g2, w, h);
+                g2.dispose();
+            }
+
+            private void drawFallback(Graphics2D g2, int w, int h) {
+                GradientPaint gradient = new GradientPaint(0, 0, new Color(137, 126, 255), w, h, new Color(110, 98, 230));
+                g2.setPaint(gradient);
+                g2.fillRect(0, 0, w, h);
+            }
+        };
+        headerArea.setLayout(null);
+        headerArea.setPreferredSize(new Dimension(394, 250));
+        headerArea.setOpaque(false);
+
+        JButton btnBack = new JButton() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(Color.WHITE);
-                g2.fillOval(0, 0, getWidth(), getHeight());
+                g2.fillOval(0, 0, 45, 45);
+                g2.setColor(new Color(137, 126, 255));
+                g2.setFont(new Font("SansSerif", Font.BOLD, 20));
+                FontMetrics fm = g2.getFontMetrics();
+                String backSym = "‹";
+                g2.drawString(backSym, (45 - fm.stringWidth(backSym)) / 2, (45 - fm.getHeight()) / 2 + fm.getAscent() - 2);
                 g2.dispose();
-                super.paintComponent(g);
             }
         };
-        backButton.setFont(FontManager.getPoppins(16f).deriveFont(Font.BOLD));
-        backButton.setForeground(new Color(137, 126, 255)); // Warna Ungu Utama
-        backButton.setOpaque(false);
-        backButton.setContentAreaFilled(false);
-        backButton.setFocusPainted(false);
-        backButton.setBorder(BorderFactory.createEmptyBorder());
-        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        backButton.addActionListener(e -> dispose());
+        btnBack.setBounds(20, 20, 45, 45);
+        btnBack.setFocusPainted(false);
+        btnBack.setBorderPainted(false);
+        btnBack.setContentAreaFilled(false);
+        btnBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnBack.addActionListener(e -> dispose());
+        headerArea.add(btnBack);
+        mainPanel.add(headerArea, BorderLayout.NORTH);
 
-        JPanel backWrap = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        backWrap.setOpaque(false);
-        backWrap.setBorder(BorderFactory.createEmptyBorder(16, 16, 0, 0));
-        
-        // Membungkus tombol agar benar-benar sirkular (lingkaran) berukuran 40x40
-        JPanel btnCircle = new JPanel(new BorderLayout());
-        btnCircle.setOpaque(false);
-        btnCircle.setPreferredSize(new Dimension(40, 40));
-        btnCircle.add(backButton, BorderLayout.CENTER);
-        
-        backWrap.add(btnCircle);
-        header.add(backWrap, BorderLayout.NORTH);
+        // --- CONTENT AREA ---
+        // [FIX TEKS] Gunakan JTextPane untuk deskripsi agar wrap otomatis mengikuti lebar container
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBackground(Color.WHITE);
+        // Padding kiri-kanan 24px → ruang teks efektif = 394 - 48 = 346px
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(25, 24, 25, 24));
 
-        // ---- Body Panel yang bisa di-scroll ----
-        JPanel body = new JPanel();
-        body.setOpaque(false);
-        body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
-        body.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Judul Utama - Warna disesuaikan dengan teks gelap header Journal (30, 41, 59)
-        JLabel titleLabel = new JLabel(recommendation.getTitle());
-        titleLabel.setFont(FontManager.getPoppins(20f).deriveFont(Font.BOLD));
+        // JUDUL
+        JLabel titleLabel = new JLabel("<html><div style='width:320px;'>" + recommendation.getTitle() + "</div></html>");
+        titleLabel.setFont(FontManager.getPoppins(24f).deriveFont(Font.BOLD));
         titleLabel.setForeground(new Color(30, 41, 59));
-        titleLabel.setAlignmentX(0f);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // [FIX TEKS] Batasi lebar maksimum agar tidak melebihi panel
+        titleLabel.setMaximumSize(new Dimension(346, Integer.MAX_VALUE));
+        contentPanel.add(titleLabel);
+        contentPanel.add(Box.createVerticalStrut(15));
 
-        // Deskripsi - Warna disesuaikan dengan sub-teks abu-abu Journal (100, 116, 139)
-        JLabel descLabel = new JLabel("<html><div style='width:320px;'>"
-                + recommendation.getDescription() + "</div></html>");
-        descLabel.setFont(FontManager.getPoppins(13f));
-        descLabel.setForeground(new Color(100, 116, 139));
-        descLabel.setAlignmentX(0f);
-        descLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 16, 0));
+        // [FIX TEKS] Ganti JLabel deskripsi dengan JTextArea agar wrap benar-benar mengikuti lebar container
+        JTextArea descArea = new JTextArea(recommendation.getDescription());
+        descArea.setFont(FontManager.getPoppins(14f));
+        descArea.setForeground(new Color(100, 116, 139));
+        descArea.setBackground(Color.WHITE);
+        descArea.setLineWrap(true);       // Aktifkan text wrap
+        descArea.setWrapStyleWord(true);  // Wrap per kata, bukan per karakter
+        descArea.setEditable(false);
+        descArea.setFocusable(false);
+        descArea.setOpaque(false);
+        descArea.setBorder(null);
+        descArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // Kunci lebar maksimum sesuai ruang efektif
+        descArea.setMaximumSize(new Dimension(346, Integer.MAX_VALUE));
+        contentPanel.add(descArea);
+        contentPanel.add(Box.createVerticalStrut(25));
 
-        RoundedPanel stepsCard = buildStepsCard(recommendation);
-        stepsCard.setAlignmentX(0f);
-        stepsCard.setMaximumSize(new Dimension(340, 220));
+        // STEPS CARD
+        JPanel stepsCard = new RoundedPanel(16, new Color(250, 251, 255), true);
+        stepsCard.setLayout(new BoxLayout(stepsCard, BoxLayout.Y_AXIS));
+        stepsCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(235, 238, 250), 1),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+        stepsCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+        stepsCard.setMaximumSize(new Dimension(346, Integer.MAX_VALUE)); // Sesuai ruang efektif
 
-        body.add(titleLabel);
-        body.add(descLabel);
-        body.add(stepsCard);
-        body.add(Box.createVerticalStrut(16));
-
-        JScrollPane scrollPane = new JScrollPane(body);
-        scrollPane.setBorder(null);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(14);
-
-        // ---- Footer panel untuk tombol aksi ----
-        JPanel footer = new JPanel(new GridLayout(1, 2, 10, 0));
-        footer.setOpaque(false);
-        footer.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
-
-        // Tombol Tandai Selesai - Menggunakan struktur style Journal Button
-        RoundedButton completeButton = new RoundedButton();
-        completeButton.setText("✓  Selesai");
-        completeButton.setCornerRadius(12);
-        completeButton.setFont(FontManager.getPoppins(12f).deriveFont(Font.BOLD));
-        completeButton.setPreferredSize(new Dimension(150, 44));
-        completeButton.setBackground(new Color(137, 126, 255)); // Ungu Utama
-        completeButton.setForeground(Color.WHITE);
-        completeButton.addActionListener(e -> {
-            if (onMarkComplete != null) onMarkComplete.onAction();
-            dispose();
-        });
-
-        // Tombol Favorit - Menggunakan alternatif background halus beraliran netral
-        RoundedButton favoriteButton = new RoundedButton();
-        favoriteButton.setText("♡  Favorit");
-        favoriteButton.setCornerRadius(12);
-        favoriteButton.setFont(FontManager.getPoppins(12f).deriveFont(Font.BOLD));
-        favoriteButton.setPreferredSize(new Dimension(150, 44));
-        favoriteButton.setBackground(new Color(241, 245, 249)); // Abu-abu terang netral
-        favoriteButton.setForeground(new Color(51, 65, 85));   // Teks kontras gelap
-        favoriteButton.addActionListener(e -> {
-            if (onSaveFavorite != null) onSaveFavorite.onAction();
-        });
-
-        footer.add(completeButton);
-        footer.add(favoriteButton);
-
-        root.add(header, BorderLayout.NORTH);
-        root.add(scrollPane, BorderLayout.CENTER);
-        root.add(footer, BorderLayout.SOUTH);
-    }
-
-    public void setOnMarkComplete(OnActionListener listener) {
-        this.onMarkComplete = listener;
-    }
-
-    public void setOnSaveFavorite(OnActionListener listener) {
-        this.onSaveFavorite = listener;
-    }
-
-    private RoundedPanel buildStepsCard(Recommendation recommendation) {
-        // Menggunakan background abu-abu tipis (250, 250, 250) yang serupa dengan area input form Journal
-        RoundedPanel card = new RoundedPanel(16, new Color(250, 250, 250), false);
-        card.setCardBorderColor(new Color(226, 232, 240)); // Border subtle
-        card.setLayout(new BorderLayout());
-        card.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
-
-        JLabel headerLabel = new JLabel("Langkah aktivitas");
-        headerLabel.setFont(FontManager.getPoppins(14f).deriveFont(Font.BOLD));
-        headerLabel.setForeground(new Color(30, 41, 59));
-
-        JPanel stepsList = new JPanel();
-        stepsList.setOpaque(false);
-        stepsList.setLayout(new BoxLayout(stepsList, BoxLayout.Y_AXIS));
-        stepsList.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        JLabel labelHeader = new JLabel("Langkah aktivitas");
+        labelHeader.setFont(FontManager.getPoppins(16f).deriveFont(Font.BOLD));
+        labelHeader.setForeground(new Color(30, 41, 59));
+        labelHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
+        labelHeader.setMaximumSize(new Dimension(306, Integer.MAX_VALUE));
+        stepsCard.add(labelHeader);
+        stepsCard.add(Box.createVerticalStrut(15));
 
         String[] steps = recommendation.getSteps();
-        if (steps == null || steps.length == 0) {
-            steps = defaultSteps();
+        if (steps != null && steps.length > 0) {
+            for (int i = 0; i < steps.length; i++) {
+                // [FIX TEKS] Gunakan JTextArea untuk tiap langkah juga agar wrap konsisten
+                JTextArea stepArea = new JTextArea((i + 1) + ". " + steps[i]);
+                stepArea.setFont(FontManager.getPoppins(14f));
+                stepArea.setForeground(new Color(51, 65, 85));
+                stepArea.setBackground(new Color(250, 251, 255));
+                stepArea.setLineWrap(true);
+                stepArea.setWrapStyleWord(true);
+                stepArea.setEditable(false);
+                stepArea.setFocusable(false);
+                stepArea.setOpaque(false);
+                stepArea.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+                stepArea.setAlignmentX(Component.LEFT_ALIGNMENT); // Kunci alignment kiri
+                stepArea.setMaximumSize(new Dimension(306, Integer.MAX_VALUE));
+                stepsCard.add(stepArea);
+            }
+        } else {
+            JLabel emptySteps = new JLabel("Memuat langkah aktivitas...");
+            emptySteps.setFont(FontManager.getPoppins(13f));
+            emptySteps.setForeground(new Color(100, 116, 139));
+            emptySteps.setAlignmentX(Component.LEFT_ALIGNMENT);
+            stepsCard.add(emptySteps);
         }
+        contentPanel.add(stepsCard);
 
-        for (int i = 0; i < steps.length; i++) {
-            JLabel stepLabel = new JLabel((i + 1) + ". " + steps[i]);
-            stepLabel.setFont(FontManager.getPoppins(13f));
-            stepLabel.setForeground(new Color(51, 65, 85));
-            stepLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-            stepLabel.setAlignmentX(0f);
-            stepsList.add(stepLabel);
-        }
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        card.add(headerLabel, BorderLayout.NORTH);
-        card.add(stepsList, BorderLayout.CENTER);
-        return card;
+        // --- FOOTER ---
+        JPanel footerArea = new JPanel(new GridLayout(1, 2, 12, 0));
+        footerArea.setBackground(Color.WHITE);
+        footerArea.setBorder(BorderFactory.createEmptyBorder(15, 24, 25, 24));
+
+        JButton btnSelesai = createFooterButton("Selesai", new Color(137, 126, 255), Color.WHITE);
+        btnSelesai.addActionListener(e -> dispose());
+
+        JButton btnFav = createFooterButton("Favorit", new Color(241, 245, 249), new Color(30, 41, 59));
+
+        footerArea.add(btnSelesai);
+        footerArea.add(btnFav);
+        mainPanel.add(footerArea, BorderLayout.SOUTH);
+
+        add(mainPanel);
     }
 
-    private String[] defaultSteps() {
-        return new String[]{
-                "Duduk nyaman",
-                "Tarik napas 4 detik",
-                "Tahan 2 detik",
-                "Hembuskan 6 detik",
-                "Ulangi 5x"
-        };
-    }
-
-    /**
-     * Placeholder Header Gradient warna Ungu khas Senandika
-     */
-    private static class HeaderImage extends JPanel {
-        HeaderImage() {
-            setOpaque(false);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            int w = getWidth();
-            int h = getHeight();
-
-            // Gradient dari Ungu sedikit gelap (Atas) menuju Ungu Terang Utama (Bawah)
-            GradientPaint gradient = new GradientPaint(0, 0, new Color(110, 98, 230), 0, h,
-                    new Color(137, 126, 255));
-            g2.setPaint(gradient);
-            g2.fillRect(0, 0, w, h);
-
-            g2.dispose();
-            super.paintComponent(g);
-        }
+    private JButton createFooterButton(String text, Color bg, Color fg) {
+        JButton btn = new JButton(text);
+        btn.setFont(FontManager.getPoppins(14f).deriveFont(Font.BOLD));
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(12, 0, 12, 0));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setOpaque(true);
+        return btn;
     }
 }

@@ -14,7 +14,7 @@ public class Senandika {
 
 
     public static void main(String[] args) {
-        SplashScreen splash = new SplashScreen();
+        Login splash = new Login();
         splash.setVisible(true);
     }
     
