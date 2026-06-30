@@ -6,12 +6,21 @@ package Components.Home_Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import senandika.FontManager;
 import senandika.Model.Recommendation;
+import java.awt.Point;
+import java.awt.Insets;
 
 public class RecommendationDetailDialog extends JDialog {
 
     private final Recommendation recommendation;
+    private JPanel footerArea;
+    private CardLayout footerLayout;
+    private JPanel footerCards;
+    private JLabel timerLabel;
+    private Timer countdownTimer;
+    private int remainingSeconds;
 
     public RecommendationDetailDialog(Frame parent, Recommendation recommendation) {
         super(parent, true);
@@ -22,10 +31,20 @@ public class RecommendationDetailDialog extends JDialog {
 
     private void initUI() {
         setSize(394, 720);
-        setLocationRelativeTo(getOwner());
+        Frame owner = (Frame) getOwner();
+        if (owner != null) {
+            Point ownerLocation = owner.getLocationOnScreen();
+            Insets ownerInsets = owner.getInsets(); // tinggi title bar + border asli OS
+            int targetX = ownerLocation.x + (owner.getWidth() - getWidth()) / 2;
+            int targetY = ownerLocation.y + ownerInsets.top; // mulai TEPAT di bawah title bar
+            setLocation(targetX, targetY);
+        } else {
+            setLocationRelativeTo(null);
+        }
         setBackground(new Color(0, 0, 0, 0));
+        getContentPane().setBackground(new Color(0, 0, 0, 0));
 
-        JPanel mainPanel = new RoundedPanel(20, Color.WHITE, true);
+        JPanel mainPanel = new RoundedPanel(0, Color.WHITE, false);
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(null);
 
@@ -40,45 +59,56 @@ public class RecommendationDetailDialog extends JDialog {
                 int w = getWidth();
                 int h = getHeight();
 
+                // [FIX CROP] Kunci clip area agar gambar TIDAK PERNAH keluar dari batas panel ini,
+                // apapun ukuran/rasio gambar aslinya.
+                g2.setClip(new RoundRectangle2D.Float(0, 0, w, h, 0, 0));
+
+                boolean drawn = false;
                 try {
                     String path = recommendation.getThumbnailUrl();
                     if (path != null && !path.trim().isEmpty()) {
-                        // [FIX GAMBAR] Coba dua variasi path: dengan dan tanpa leading slash
                         java.net.URL imgURL = getClass().getClassLoader().getResource(path);
                         if (imgURL == null) {
-                            // Fallback: coba tambah slash di depan via getClass().getResource()
                             imgURL = getClass().getResource("/" + path);
                         }
-                        
+
                         if (imgURL != null) {
                             Image image = new ImageIcon(imgURL).getImage();
                             int imgW = image.getWidth(this);
                             int imgH = image.getHeight(this);
 
                             if (imgW > 0 && imgH > 0) {
+                                // [FIX CROP] Object-fit: cover — gambar selalu MEMENUHI container,
+                                // tidak gepeng, kelebihannya di-crop (bukan di-fit/stretch).
                                 double containerRatio = (double) w / h;
                                 double imageRatio = (double) imgW / imgH;
 
-                                int renderW, renderH, x = 0, y = 0;
+                                int renderW, renderH, x, y;
                                 if (imageRatio > containerRatio) {
+                                    // Gambar lebih lebar dari container -> samakan tinggi, crop kiri-kanan
                                     renderH = h;
-                                    renderW = (int) (h * imageRatio);
+                                    renderW = (int) Math.ceil(h * imageRatio);
                                     x = (w - renderW) / 2;
+                                    y = 0;
                                 } else {
+                                    // Gambar lebih tinggi/sama dari container -> samakan lebar, crop atas-bawah
                                     renderW = w;
-                                    renderH = (int) (w / imageRatio);
+                                    renderH = (int) Math.ceil(w / imageRatio);
+                                    x = 0;
                                     y = (h - renderH) / 2;
                                 }
                                 g2.drawImage(image, x, y, renderW, renderH, this);
-                                g2.dispose();
-                                return; // Berhasil gambar, keluar
+                                drawn = true;
                             }
                         }
                     }
                 } catch (Exception e) {
-                    // Lanjut ke fallback
+                    drawn = false;
                 }
-                drawFallback(g2, w, h);
+
+                if (!drawn) {
+                    drawFallback(g2, w, h);
+                }
                 g2.dispose();
             }
 
@@ -112,46 +142,80 @@ public class RecommendationDetailDialog extends JDialog {
         btnBack.setBorderPainted(false);
         btnBack.setContentAreaFilled(false);
         btnBack.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnBack.addActionListener(e -> dispose());
+        btnBack.addActionListener(e -> {
+            stopTimerIfRunning();
+            dispose();
+        });
         headerArea.add(btnBack);
         mainPanel.add(headerArea, BorderLayout.NORTH);
 
         // --- CONTENT AREA ---
-        // [FIX TEKS] Gunakan JTextPane untuk deskripsi agar wrap otomatis mengikuti lebar container
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Color.WHITE);
-        // Padding kiri-kanan 24px → ruang teks efektif = 394 - 48 = 346px
         contentPanel.setBorder(BorderFactory.createEmptyBorder(25, 24, 25, 24));
 
-        // JUDUL
         JLabel titleLabel = new JLabel("<html><div style='width:320px;'>" + recommendation.getTitle() + "</div></html>");
         titleLabel.setFont(FontManager.getPoppins(24f).deriveFont(Font.BOLD));
         titleLabel.setForeground(new Color(30, 41, 59));
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        // [FIX TEKS] Batasi lebar maksimum agar tidak melebihi panel
         titleLabel.setMaximumSize(new Dimension(346, Integer.MAX_VALUE));
         contentPanel.add(titleLabel);
         contentPanel.add(Box.createVerticalStrut(15));
+        
+        JPanel durationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        durationPanel.setOpaque(false);
+        durationPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // [FIX TEKS] Ganti JLabel deskripsi dengan JTextArea agar wrap benar-benar mengikuti lebar container
+        // 1. Label untuk menampung Ikon Gambar dari Asset
+        JLabel durationIconLabel = new JLabel();
+        try {
+            // Silakan sesuaikan path nama file ikon jam milikmu di sini
+            String iconPath = "Asset/aset-utama/clock.png"; 
+            java.net.URL imgURL = getClass().getClassLoader().getResource(iconPath);
+            if (imgURL == null) {
+                imgURL = getClass().getResource("/" + iconPath);
+            }
+            
+            if (imgURL != null) {
+                ImageIcon originalIcon = new ImageIcon(imgURL);
+                // Skala ukuran ikon menjadi 18x18 agar pas dan proporsional dengan ukuran teks font 13f
+                Image scaledImg = originalIcon.getImage().getScaledInstance(18, 18, Image.SCALE_SMOOTH);
+                durationIconLabel.setIcon(new ImageIcon(scaledImg));
+            } else {
+                durationIconLabel.setText("⏱ "); // Fallback jika file gambar tidak ditemukan
+                durationIconLabel.setFont(FontManager.getPoppins(13f));
+            }
+        } catch (Exception e) {
+            durationIconLabel.setText("⏱ ");
+        }
+        durationPanel.add(durationIconLabel);
+
+        // 2. Label untuk menampung Teks Menit Durasi
+        JLabel durationTextLabel = new JLabel(formatEstimatedDuration(recommendation.getDurationSeconds()));
+        durationTextLabel.setFont(FontManager.getPoppins(13f).deriveFont(Font.BOLD));
+        durationTextLabel.setForeground(new Color(137, 126, 255));
+        durationPanel.add(durationTextLabel);
+
+        // Masukkan kontainer gabungan ke dalam contentPanel utama
+        contentPanel.add(durationPanel);
+        contentPanel.add(Box.createVerticalStrut(15));
+
         JTextArea descArea = new JTextArea(recommendation.getDescription());
         descArea.setFont(FontManager.getPoppins(14f));
         descArea.setForeground(new Color(100, 116, 139));
         descArea.setBackground(Color.WHITE);
-        descArea.setLineWrap(true);       // Aktifkan text wrap
-        descArea.setWrapStyleWord(true);  // Wrap per kata, bukan per karakter
+        descArea.setLineWrap(true);
+        descArea.setWrapStyleWord(true);
         descArea.setEditable(false);
         descArea.setFocusable(false);
         descArea.setOpaque(false);
         descArea.setBorder(null);
         descArea.setAlignmentX(Component.LEFT_ALIGNMENT);
-        // Kunci lebar maksimum sesuai ruang efektif
         descArea.setMaximumSize(new Dimension(346, Integer.MAX_VALUE));
         contentPanel.add(descArea);
         contentPanel.add(Box.createVerticalStrut(25));
 
-        // STEPS CARD
         JPanel stepsCard = new RoundedPanel(16, new Color(250, 251, 255), true);
         stepsCard.setLayout(new BoxLayout(stepsCard, BoxLayout.Y_AXIS));
         stepsCard.setBorder(BorderFactory.createCompoundBorder(
@@ -159,7 +223,7 @@ public class RecommendationDetailDialog extends JDialog {
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
         stepsCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-        stepsCard.setMaximumSize(new Dimension(346, Integer.MAX_VALUE)); // Sesuai ruang efektif
+        stepsCard.setMaximumSize(new Dimension(346, Integer.MAX_VALUE));
 
         JLabel labelHeader = new JLabel("Langkah aktivitas");
         labelHeader.setFont(FontManager.getPoppins(16f).deriveFont(Font.BOLD));
@@ -172,7 +236,6 @@ public class RecommendationDetailDialog extends JDialog {
         String[] steps = recommendation.getSteps();
         if (steps != null && steps.length > 0) {
             for (int i = 0; i < steps.length; i++) {
-                // [FIX TEKS] Gunakan JTextArea untuk tiap langkah juga agar wrap konsisten
                 JTextArea stepArea = new JTextArea((i + 1) + ". " + steps[i]);
                 stepArea.setFont(FontManager.getPoppins(14f));
                 stepArea.setForeground(new Color(51, 65, 85));
@@ -183,7 +246,7 @@ public class RecommendationDetailDialog extends JDialog {
                 stepArea.setFocusable(false);
                 stepArea.setOpaque(false);
                 stepArea.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-                stepArea.setAlignmentX(Component.LEFT_ALIGNMENT); // Kunci alignment kiri
+                stepArea.setAlignmentX(Component.LEFT_ALIGNMENT);
                 stepArea.setMaximumSize(new Dimension(306, Integer.MAX_VALUE));
                 stepsCard.add(stepArea);
             }
@@ -204,21 +267,112 @@ public class RecommendationDetailDialog extends JDialog {
         scrollPane.getViewport().setBackground(Color.WHITE);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // --- FOOTER ---
-        JPanel footerArea = new JPanel(new GridLayout(1, 2, 12, 0));
-        footerArea.setBackground(Color.WHITE);
-        footerArea.setBorder(BorderFactory.createEmptyBorder(15, 24, 25, 24));
+        // --- FOOTER
+        footerLayout = new CardLayout();
+        footerCards = new JPanel(footerLayout);
+        footerCards.setBackground(Color.WHITE);
+        footerCards.setBorder(BorderFactory.createEmptyBorder(12, 24, 20, 24));
 
-        JButton btnSelesai = createFooterButton("Selesai", new Color(137, 126, 255), Color.WHITE);
-        btnSelesai.addActionListener(e -> dispose());
+        // STATE 1: Tombol "Mulai Aktivitas"
+        JPanel startState = new JPanel();
+        startState.setLayout(new BoxLayout(startState, BoxLayout.Y_AXIS));
+        startState.setBackground(Color.WHITE);
+        JButton btnMulai = createFooterButton("Mulai Aktivitas", new Color(137, 126, 255), Color.WHITE);
+        btnMulai.addActionListener(e -> startTimer());
+        btnMulai.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnMulai.setMaximumSize(new Dimension(346, 48)); // [FIX] BoxLayout menghormati maximumSize, beda dengan BorderLayout
+        btnMulai.setPreferredSize(new Dimension(346, 48));
+        startState.add(btnMulai);
 
-        JButton btnFav = createFooterButton("Favorit", new Color(241, 245, 249), new Color(30, 41, 59));
+        // STATE 2: Tampilan timer countdown + tombol Stop
+        JPanel runningState = new JPanel();
+        runningState.setLayout(new BoxLayout(runningState, BoxLayout.Y_AXIS));
+        runningState.setBackground(Color.WHITE);
 
-        footerArea.add(btnSelesai);
-        footerArea.add(btnFav);
-        mainPanel.add(footerArea, BorderLayout.SOUTH);
+        timerLabel = new JLabel("00:00", SwingConstants.CENTER);
+        timerLabel.setFont(FontManager.getPoppins(28f).deriveFont(Font.BOLD));
+        timerLabel.setForeground(new Color(137, 126, 255));
+        timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        runningState.add(timerLabel);
+        runningState.add(Box.createVerticalStrut(12));
 
-        add(mainPanel);
+        JButton btnStop = createFooterButton("Stop", new Color(241, 245, 249), new Color(30, 41, 59));
+        btnStop.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnStop.setMaximumSize(new Dimension(346, 45));
+        btnStop.addActionListener(e -> stopActivityManually());
+        runningState.add(btnStop);
+
+        footerCards.add(startState, "start");
+        footerCards.add(runningState, "running");
+        footerLayout.show(footerCards, "start");
+
+        mainPanel.add(footerCards, BorderLayout.SOUTH);
+
+        setContentPane(mainPanel);
+    }
+
+    // [TIMER] Memulai countdown sesuai durationSeconds dari model Recommendation
+    private void startTimer() {
+        remainingSeconds = recommendation.getDurationSeconds();
+        if (remainingSeconds <= 0) {
+            remainingSeconds = 60; // fallback default 1 menit jika durasi belum diisi
+        }
+        updateTimerLabel();
+        footerLayout.show(footerCards, "running");
+
+        countdownTimer = new Timer(1000, e -> {
+            remainingSeconds--;
+            updateTimerLabel();
+            if (remainingSeconds <= 0) {
+                countdownTimer.stop();
+                JOptionPane.showMessageDialog(this,
+                        "Selamat, kamu telah menyelesaikan aktivitas ini!",
+                        "Aktivitas Selesai",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            }
+        });
+        countdownTimer.start();
+    }
+
+    // [TIMER] Update tampilan label format MM:SS
+    private void updateTimerLabel() {
+        int minutes = remainingSeconds / 60;
+        int seconds = remainingSeconds % 60;
+        timerLabel.setText(String.format("%02d:%02d", minutes, seconds));
+    }
+    
+    private String formatEstimatedDuration(int totalSeconds) {
+        if (totalSeconds <= 0) {
+            return "Estimasi waktu tidak tersedia";
+        }
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        if (minutes == 0) {
+            return "Kurang lebih " + seconds + " detik";
+        } else if (seconds == 0) {
+            return "Kurang lebih " + minutes + " menit";
+        } else {
+            return "Kurang lebih " + minutes + " menit " + seconds + " detik";
+        }
+    }
+
+    // [TIMER] User menekan tombol Stop di tengah jalan -> tetap dianggap selesai sesuai permintaan
+    private void stopActivityManually() {
+        stopTimerIfRunning();
+        JOptionPane.showMessageDialog(this,
+                "Selamat, kamu telah menyelesaikan aktivitas ini!",
+                "Aktivitas Selesai",
+                JOptionPane.INFORMATION_MESSAGE);
+        dispose();
+    }
+
+    // [TIMER] Hentikan timer dengan aman (dipanggil juga saat tombol back ditekan)
+    private void stopTimerIfRunning() {
+        if (countdownTimer != null && countdownTimer.isRunning()) {
+            countdownTimer.stop();
+        }
     }
 
     private JButton createFooterButton(String text, Color bg, Color fg) {
@@ -227,7 +381,7 @@ public class RecommendationDetailDialog extends JDialog {
         btn.setBackground(bg);
         btn.setForeground(fg);
         btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createEmptyBorder(12, 0, 12, 0));
+        btn.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.setOpaque(true);
         return btn;

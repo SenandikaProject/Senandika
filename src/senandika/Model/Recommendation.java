@@ -11,7 +11,8 @@ public class Recommendation {
     private String description;
     private String thumbnailUrl;
     private String[] steps;
-    private String durationLabel; // e.g. "5 menit" - optional extra shown on the card
+    private String durationLabel;
+    private int durationSeconds;
 
     public Recommendation() {
     }
@@ -78,5 +79,13 @@ public class Recommendation {
 
     public void setDurationLabel(String durationLabel) {
         this.durationLabel = durationLabel;
+    }
+    
+    public int getDurationSeconds() {
+    return durationSeconds;
+}
+
+    public void setDurationSeconds(int durationSeconds) {
+        this.durationSeconds = durationSeconds;
     }
 }

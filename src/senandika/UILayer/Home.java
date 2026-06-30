@@ -160,7 +160,7 @@ public class Home extends javax.swing.JFrame {
         
         // Menu 1: Buat Jurnal (Tetap)
         gridActions.add(buildQuickActionCard("Asset/aset-utama/createjournal.png", "Buat Jurnal", () -> {
-            senandika.UILayer.Journal jurnal = new senandika.UILayer.Journal();
+            senandika.UILayer.CreateJournal jurnal = new senandika.UILayer.CreateJournal();
             jurnal.setVisible(true);
             dispose();
         }));
@@ -672,6 +672,7 @@ private void generateDynamicSuggestions(int tingkatMood, JPanel container) {
             // Ambil langkah-langkah asli dari kolom matriks baru (Pemisah ;)
             detailModel.setSteps(recData[4].split(";")); 
             detailModel.setThumbnailUrl(recData[3]);
+            detailModel.setDurationSeconds(getDurationSecondsForActivity(recData[0]));
             
             // Panggil dialog detail aslimu
             RecommendationDetailDialog dialog = new RecommendationDetailDialog(this, detailModel);
@@ -681,6 +682,27 @@ private void generateDynamicSuggestions(int tingkatMood, JPanel container) {
         container.add(card);
         // Jarak 12px antar kartu (Padding Kanan otomatis)
         container.add(Box.createHorizontalStrut(12)); 
+    }
+}
+
+private int getDurationSecondsForActivity(String title) {
+    switch (title) {
+        case "Menulis Katarsis": return 300;          // 5 menit
+        case "Mendengarkan Musik": return 240;         // 4 menit
+        case "Latihan Afirmasi": return 120;           // 2 menit
+        case "Jalan Santai 10 Menit": return 600;      // 10 menit
+        case "Mindful Tea Sipping": return 300;        // 5 menit
+        case "Terapi Hijau Visual": return 180;        // 3 menit
+        case "Peregangan Otot Leher": return 90;       // 1.5 menit
+        case "Hitung Mundur Fokus": return 120;        // 2 menit
+        case "Sensasi Air Dingin": return 60;          // 1 menit
+        case "Jurnal Syukur Kecil": return 300;        // 5 menit
+        case "Apresiasi Sahabat": return 120;          // 2 menit
+        case "Hobi Ekspresif 15m": return 900;         // 15 menit
+        case "Perencanaan Esok Seru": return 480;      // 8 menit
+        case "Olahraga Kardio Ringan": return 600;     // 10 menit
+        case "Membaca Wawasan Baru": return 600;       // 10 menit
+        default: return 60;                            // fallback 1 menit
     }
 }
 
@@ -728,9 +750,6 @@ private void generateDynamicSuggestions(int tingkatMood, JPanel container) {
             renderMoodSummaryLocal(latestMood);
             dailyInsightCard.updateByMood(latestMood.getTingkatMood());
             
-            // =====================================================================
-            // PERBAIKAN UTAMA: Hubungkan pemicu pengisian card dinamis di sini!
-            // =====================================================================
             generateDynamicSuggestions(latestMood.getTingkatMood(), recommendationsContent);
             
         } else {

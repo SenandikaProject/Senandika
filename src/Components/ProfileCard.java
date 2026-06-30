@@ -49,7 +49,7 @@ public class ProfileCard extends JPanel {
         setBorder(
             BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(230, 230, 230), 1, true),
-                BorderFactory.createEmptyBorder(25, 25, 25, 25)
+                BorderFactory.createEmptyBorder(25, 40, 25, 40)
             )
         );
 
@@ -82,24 +82,6 @@ public class ProfileCard extends JPanel {
         JPanel photoActionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         photoActionPanel.setOpaque(false);
 
-        btnChooseFoto = new RoundedButton();
-        btnChooseFoto.setText("Upload Foto");
-        btnChooseFoto.setCornerRadius(12);
-        btnChooseFoto.setPreferredSize(new Dimension(110, 32));
-        btnChooseFoto.setBackground(new Color(229, 231, 235));
-        btnChooseFoto.setFont(FontManager.getPoppins(12f));
-
-        btnSaveFoto = new RoundedButton();
-        btnSaveFoto.setText("Simpan Foto");
-        btnSaveFoto.setCornerRadius(12);
-        btnSaveFoto.setPreferredSize(new Dimension(110, 32));
-        btnSaveFoto.setBackground(new Color(137, 126, 255));
-        btnSaveFoto.setForeground(Color.WHITE);
-        btnSaveFoto.setFont(FontManager.getPoppins(12f));
-
-        photoActionPanel.add(btnChooseFoto);
-        photoActionPanel.add(btnSaveFoto);
-
         // Satukan elemen ke dalam panel header
         headerPanel.add(profileImg);
         headerPanel.add(Box.createVerticalStrut(8));
@@ -115,7 +97,7 @@ public class ProfileCard extends JPanel {
         formPanel.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 0, 6, 0);
+        gbc.insets = new Insets(6, 10, 6, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
 
@@ -218,33 +200,6 @@ public class ProfileCard extends JPanel {
     }
 
     private void initActionListeners() {
-        btnChooseFoto.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png", "webp"));
-            int result = chooser.showOpenDialog(parentFrame);
-
-            if (result == JFileChooser.APPROVE_OPTION) {
-                selectedFile = chooser.getSelectedFile();
-                ImageIcon icon = new ImageIcon(selectedFile.getAbsolutePath());
-                Image image = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                profileImg.setIcon(new ImageIcon(image));
-            }
-        });
-
-        btnSaveFoto.addActionListener(e -> {
-            try {
-                if (selectedFile == null) {
-                    JOptionPane.showMessageDialog(parentFrame, "Pilih gambar terlebih dahulu");
-                    return;
-                }
-                ProfileService service = new ProfileService();
-                String response = service.uploadProfilePhoto(selectedFile);
-                System.out.println(response);
-                JOptionPane.showMessageDialog(parentFrame, "Foto profile berhasil diupload");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(parentFrame, ex.getMessage());
-            }
-        });
 
         BtnLogout.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(parentFrame, "Yakin ingin logout?", "Logout", JOptionPane.YES_NO_OPTION);

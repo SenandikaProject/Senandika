@@ -13,6 +13,12 @@ import java.awt.GridBagLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import senandika.ServiceLayer.ProfileService;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JFileChooser;
+import javax.swing.ImageIcon;
+import java.io.File;
+import java.net.URL;
 
 /**
  *
@@ -22,6 +28,8 @@ public class UpdateProfile extends javax.swing.JFrame {
     private final String BASE_URL =
         "http://localhost:5000";
     private UpdateProfileCard card;
+    private File selectedPhotoFile;
+    private JScrollPane scrollPane;
     
     public UpdateProfile() {
         initComponents();
@@ -38,42 +46,51 @@ public class UpdateProfile extends javax.swing.JFrame {
     private void initUI() {
         content.setBackground(
             new Color(246,255,248)
-                
         );
-        
-        content.revalidate();
-        content.repaint();
-        
+
         content.setOpaque(true);
-        
-        int lastY = 420;
+
+        // Tinggi diperbesar untuk menampung blok preview foto + tombol + seluruh form
+        int lastY = 820;
         content.setPreferredSize(
                 new java.awt.Dimension(
                         398,
-                        lastY + 50
+                        lastY
                 )
         );
-      
-        content.setLayout(new GridBagLayout());
-
-        content.removeAll();
 
         content.setLayout(
                 new GridBagLayout()
         );
-        
-        GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
 
-            gbc.anchor = GridBagConstraints.CENTER;
+        content.removeAll();
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
         card = new UpdateProfileCard();
         content.add(card, gbc);
 
+        // ===== TAMBAHAN: BUNGKUS CONTENT DENGAN SCROLLPANE =====
+        scrollPane = new JScrollPane(content);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(new Color(246, 255, 248));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        getContentPane().removeAll();
+        getContentPane().setLayout(new java.awt.BorderLayout());
+        getContentPane().add(scrollPane, java.awt.BorderLayout.CENTER);
+        // ===== AKHIR TAMBAHAN =====
+
+        // Atur ukuran window yang muncul ke layar (lebih tinggi dari sebelumnya, tapi tetap dibatasi agar muat di layar)
+        setSize(420, 720);
+
         content.revalidate();
         content.repaint();
-        this.pack();
     }
 
     private void initEvents() {
@@ -84,6 +101,31 @@ public class UpdateProfile extends javax.swing.JFrame {
         card.btnBatal.addActionListener(e -> {
             btnBatalActionPerformed();
         });
+        
+        card.btnUploadFoto.addActionListener(e -> {
+            btnUploadFotoActionPerformed();
+        });
+    }
+    
+    private void btnUploadFotoActionPerformed() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(
+                new javax.swing.filechooser.FileNameExtensionFilter(
+                        "Gambar (jpg, jpeg, png)", "jpg", "jpeg", "png"
+                )
+        );
+
+        int result = chooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            selectedPhotoFile = chooser.getSelectedFile();
+            try {
+                java.awt.Image img = new ImageIcon(selectedPhotoFile.getAbsolutePath()).getImage();
+                card.setPreviewImage(img);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Gagal memuat preview: " + ex.getMessage());
+            }
+        }
     }
     
     private void btnSimpanActionPerformed() {
@@ -119,13 +161,17 @@ public class UpdateProfile extends javax.swing.JFrame {
                     new ProfileService();
 
             String response =
-                    service.updateProfile(
-                            username,
-                            fullName,
-                            gender,
-                            stressLevel,
-                            activity
-                    );
+                service.updateProfile(
+                        username,
+                        fullName,
+                        gender,
+                        stressLevel,
+                        activity
+                );
+            
+            if (selectedPhotoFile != null) {
+                String photoResponse = service.uploadProfilePhoto(selectedPhotoFile);
+            }
 
             JOptionPane.showMessageDialog(
                     this,
@@ -232,6 +278,12 @@ public class UpdateProfile extends javax.swing.JFrame {
                     data.get("favorite_activity")
                             .getAsString()
             );
+            
+            if (data.has("profile_picture") && !data.get("profile_picture").isJsonNull()) {
+                String imagePath = data.get("profile_picture").getAsString();
+                URL photoUrl = new URL(BASE_URL + imagePath);
+                card.setPreviewImage(photoUrl);
+            }
 
         } catch (Exception e) {
 

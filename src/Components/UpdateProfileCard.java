@@ -3,11 +3,14 @@ package Components;
 import java.awt.*;
 import javax.swing.*;
 import senandika.FontManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class UpdateProfileCard extends JPanel {
 
     public JTextField inputUsername;
     public JTextField inputFullName;
+    
+    public java.io.File selectedPhotoFile;
 
     public JComboBox<String> cbGender;
     public JComboBox<String> cbStress;
@@ -15,6 +18,9 @@ public class UpdateProfileCard extends JPanel {
 
     public RoundedButton btnBatal;
     public RoundedButton btnSimpan;
+    public JLabel previewImg;
+    public RoundedButton btnUploadFoto;
+
 
     public UpdateProfileCard() {
         initComponents();
@@ -91,6 +97,41 @@ public class UpdateProfileCard extends JPanel {
         header.add(lblTitle);
         header.add(Box.createVerticalStrut(5));
         header.add(lblSub);
+
+        // ===== BLOK BARU: PREVIEW & UPLOAD FOTO =====
+        header.add(Box.createVerticalStrut(18));
+
+        previewImg = new JLabel();
+        previewImg.setPreferredSize(new Dimension(100, 100));
+        previewImg.setMaximumSize(new Dimension(100, 100));
+        previewImg.setMinimumSize(new Dimension(100, 100));
+        previewImg.setAlignmentX(Component.CENTER_ALIGNMENT);
+        previewImg.setHorizontalAlignment(SwingConstants.CENTER);
+        previewImg.setOpaque(true);
+        previewImg.setBackground(new Color(248, 250, 252));
+        previewImg.setBorder(
+                BorderFactory.createLineBorder(new Color(226, 232, 240), 1, true)
+        );
+        previewImg.setText("Tidak ada foto");
+        previewImg.setFont(FontManager.getPoppins(10f));
+        previewImg.setForeground(new Color(148, 163, 184));
+
+        header.add(previewImg);
+        header.add(Box.createVerticalStrut(10));
+
+        btnUploadFoto = new RoundedButton();
+        btnUploadFoto.setText("Pilih Foto");
+        btnUploadFoto.setCornerRadius(10);
+        btnUploadFoto.setPreferredSize(new Dimension(140, 36));
+        btnUploadFoto.setMaximumSize(new Dimension(140, 36));
+        btnUploadFoto.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnUploadFoto.setBackground(new Color(241, 245, 249));
+        btnUploadFoto.setForeground(new Color(30, 41, 59));
+        btnUploadFoto.setFont(FontManager.getPoppins(12f));
+        btnUploadFoto.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        header.add(btnUploadFoto);
+        // ===== AKHIR BLOK BARU =====
 
         add(header, BorderLayout.NORTH);
     }
@@ -291,6 +332,7 @@ public class UpdateProfileCard extends JPanel {
     }
 
     private void styleCombo(
+            
             JComboBox<String> combo
     ) {
 
@@ -304,5 +346,20 @@ public class UpdateProfileCard extends JPanel {
         combo.setFont(
                 FontManager.getPoppins(11f)
         );
+    }
+    
+    public void setPreviewImage(java.awt.Image image) {
+    previewImg.setText("");
+    java.awt.Image scaled = image.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH);
+    previewImg.setIcon(new ImageIcon(scaled));
+}
+
+    public void setPreviewImage(java.net.URL imageUrl) {
+        try {
+            ImageIcon icon = new ImageIcon(imageUrl);
+            setPreviewImage(icon.getImage());
+        } catch (Exception e) {
+            System.err.println("Gagal load preview dari URL: " + e.getMessage());
+        }
     }
 }
