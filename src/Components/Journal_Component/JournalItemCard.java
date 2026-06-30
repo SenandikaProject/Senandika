@@ -14,6 +14,7 @@ public class JournalItemCard extends JPanel {
     private RoundedButton btnEdit;
     private RoundedButton btnDelete;
 
+    private JCheckBox chkSelect;
     private int journalId;
 
     public JournalItemCard() {
@@ -74,6 +75,22 @@ public class JournalItemCard extends JPanel {
         card.add(bottom, BorderLayout.SOUTH);
 
         add(card, BorderLayout.CENTER);
+        
+        // Checkbox Select
+        chkSelect = new JCheckBox();
+        chkSelect.setOpaque(false);
+        chkSelect.setVisible(false);
+        chkSelect.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Styling Checkbox agar tampak lebih modern (Tema Ungu Soft Senandika)
+        chkSelect.setFont(new Font("Poppins", Font.PLAIN, 12));
+        chkSelect.setForeground(new Color(139, 92, 246)); // Violet-500
+
+        // Berikan margin ekstra di sebelah kanan checkbox agar tidak menempel langsung dengan teks Judul Jurnal
+        chkSelect.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 12));
+
+        // Masukkan chkSelect ke posisi paling kiri (WEST) kartu Anda jika menggunakan BorderLayout
+        add(chkSelect, BorderLayout.WEST);
     }
 
     public void setData(int id, String judul, String createdAt) {
@@ -84,7 +101,20 @@ public class JournalItemCard extends JPanel {
         String tanggalDiformat = formatDate(createdAt);
         this.lblDate.setText(tanggalDiformat);
     }
+    
+    public void setSelectionMode(boolean visible) {
+        chkSelect.setVisible(visible);
+        if (!visible) {
+            chkSelect.setSelected(false); // Reset centang jika mode selection dimatikan
+        }
+        revalidate();
+        repaint();
+    }
 
+    public boolean isSelectedForDelete() {
+        return chkSelect.isVisible() && chkSelect.isSelected();
+    }
+    
     private static String formatDate(String isoDate) {
         if (isoDate == null || isoDate.isEmpty()) {
             return "";
@@ -93,29 +123,38 @@ public class JournalItemCard extends JPanel {
         try {
             String clean = isoDate.trim();
 
-            // Mengambil yyyy-MM-dd
+            // 1. Ambil tanggal dasar (YYYY-MM-DD)
             java.time.LocalDate date = java.time.LocalDate.parse(clean.substring(0, 10));
 
+            // 2. Deteksi pemisah antara Tanggal dan Jam ('T' atau spasi)
             int indexT = clean.contains("T") ? clean.indexOf("T") : clean.indexOf(" ");
-            String jamStr = " 00:00"; // Fallback default jika data waktu kosong
+            String jamStr = " 23:00"; // Fallback default jika jam tidak ditemukan
 
-            if (indexT != -1 && clean.length() >= indexT + 6) {
-                String jamMentah = clean.substring(indexT + 1, indexT + 3); 
-                String menitMentah = clean.substring(indexT + 4, indexT + 6); 
+            if (indexT != -1 && clean.length() > indexT + 5) {
+                // Mengambil bagian jam saja setelah T/spasi (misal: "HH:mm:ss...")
+                String waktuMentah = clean.substring(indexT + 1);
 
-                int jamAngka = Integer.parseInt(jamMentah);
+                // Split berdasarkan tanda ":" agar mendapatkan Jam dan Menit secara presisi
+                String[] parts = waktuMentah.split(":");
+                if (parts.length >= 2) {
+                    String jamMentah = parts[0];   // Pasti memuat 2 digit jam
+                    String menitMentah = parts[1]; // Pasti memuat 2 digit menit
 
-                // Perbaikan: Tambahkan 8 Jam untuk konversi UTC ke WITA
-                int jamLokal = (jamAngka + 8) % 24; 
+                    int jamAngka = Integer.parseInt(jamMentah);
 
-                // Jika penambahan jam melewati pukul 23:59, tanggal bertambah 1 hari
-                if (jamAngka + 8 >= 24) {
-                    date = date.plusDays(1);
+                    // 3. Terapkan Logika +16 Jam yang sudah sukses di halaman Mood
+                    int jamLokal = (jamAngka + 16) % 24; 
+
+                    // Jika penambahan jam melewati tengah malam, naikkan tanggal 1 hari ke depan
+                    if (jamAngka + 16 >= 24) {
+                        date = date.plusDays(1);
+                    }
+
+                    jamStr = String.format(" %02d:%s", jamLokal, menitMentah);
                 }
-
-                jamStr = String.format(" %02d:%s", jamLokal, menitMentah);
             }
 
+            // 4. Format nama bulan ke Indonesia
             String[] bulan = {
                 "Januari", "Februari", "Maret", "April", "Mei", "Juni",
                 "Juli", "Agustus", "September", "Oktober", "November", "Desember"
@@ -124,7 +163,9 @@ public class JournalItemCard extends JPanel {
             return date.getDayOfMonth() + " " + bulan[date.getMonthValue() - 1] + " " + date.getYear() + jamStr;
 
         } catch (Exception e) {
-            return isoDate; // Fallback jika format string tidak sesuai standar
+            // Jika ada eror parsing, kita cetak ke log untuk mempermudah debugging
+            System.out.println("Eror parsing tanggal: " + e.getMessage());
+            return isoDate; 
         }
     }
 
