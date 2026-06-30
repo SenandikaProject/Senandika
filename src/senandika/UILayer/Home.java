@@ -13,14 +13,18 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import senandika.Model.Mood;
@@ -116,13 +120,27 @@ public class Home extends javax.swing.JFrame {
         recTitle.setForeground(new Color(30, 41, 59));
         content.add(recTitle, new AbsoluteConstraints(28, currentY, 340, 25));
         currentY += 30;
+        // PANEL INTERNAL: Menggunakan BoxLayout X_AXIS agar deretan card otomatis berjejer ke samping
+        JPanel horizontalScrollPanel = new JPanel();
+        horizontalScrollPanel.setOpaque(false);
+        horizontalScrollPanel.setLayout(new BoxLayout(horizontalScrollPanel, BoxLayout.X_AXIS)); // Mengunci layout horizontal
 
-        recommendationsContent = new JPanel();
-        recommendationsContent.setOpaque(false);
-        recommendationsContent.setLayout(new MigLayout("insets 0, gap 12", "[grow,fill][grow,fill]"));
-        content.add(recommendationsContent, new AbsoluteConstraints(24, currentY, 344, 220));
-        renderRecommendationsLoading();
-        currentY += 235;
+        // SCROLL PANE: Pembungkus panel internal agar list bisa di-scroll ke samping dengan halus
+        JScrollPane horizontalScroll = new JScrollPane(horizontalScrollPanel);
+        horizontalScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        horizontalScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        horizontalScroll.setBorder(null);
+        horizontalScroll.setOpaque(false);
+        horizontalScroll.getViewport().setOpaque(false);
+        horizontalScroll.getHorizontalScrollBar().setUnitIncrement(14); // Mengatur kecepatan scroll mouse
+
+        // Masukkan Scroll Pane utama ke layout Absolute kontainer Home
+        content.add(horizontalScroll, new AbsoluteConstraints(24, currentY, 344, 250));
+        
+        // PENTING: Alihkan reference variabel global kamu ke panel internal baru ini
+        recommendationsContent = horizontalScrollPanel; 
+        
+        currentY += 265;
 
         // ---- 5. WELLNESS PROGRESS SECTION ----
         wellnessProgressCard = new WellnessProgressCard();
@@ -139,25 +157,63 @@ public class Home extends javax.swing.JFrame {
 
         JPanel gridActions = new JPanel(new MigLayout("insets 0, gap 12", "[grow,fill][grow,fill]"));
         gridActions.setOpaque(false);
-        gridActions.add(buildQuickActionCard("📚", "Buat Jurnal", () -> {
-            Journal jurnal = new Journal();
+        
+        // Menu 1: Buat Jurnal (Tetap)
+        gridActions.add(buildQuickActionCard("Asset/aset-utama/createjournal.png", "Buat Jurnal", () -> {
+            senandika.UILayer.Journal jurnal = new senandika.UILayer.Journal();
             jurnal.setVisible(true);
             dispose();
         }));
-        gridActions.add(buildQuickActionCard("😊", "Isi Mood", () -> {
-            Mood mood = new Mood();
-            mood.setVisible(true);
+        
+        // Menu 2: Isi Mood
+        gridActions.add(buildQuickActionCard("Asset/aset-utama/icon_mood.png", "Isi Mood", () -> {
+            senandika.UILayer.Mood moodWindow = new senandika.UILayer.Mood();
+            moodWindow.setVisible(true);
             dispose();
         }), "wrap");
-        gridActions.add(buildQuickActionCard("🌱", "Aktivitas", () -> {
-            // Callback menu aktivitas/rekomendasi
-        }));
-        gridActions.add(buildQuickActionCard("📊", "Statistik", () -> {
-            // Callback menu statistik data
+
+        // Menu 3: Acak Tantangan
+        gridActions.add(buildQuickActionCard("Asset/aset-utama/dailyChallenge.png", "Acak Tantangan", () -> {
+            String[] challenges = {
+                "Minum air putih satu gelas penuh sekarang juga demi hidrasi otakmu.",
+                "Rapikan meja belajar atau kasurmu dalam waktu 2 menit. Rasakan kesegarannya!",
+                "Tarik napas dalam-dalam selama 4 detik, tahan 4 detik, embuskan 4 detik. Ulangi 3 kali.",
+                "Jauhkan pandangan dari layar laptop/HP, tatap objek terjauh di luar jendela selama 20 detik.",
+                "Kirimkan satu stiker lucu atau pesan teks singkat 'terima kasih' kepada teman dekatmu.",
+                "Lakukan peregangan tangan dan putar pundakmu 5 kali untuk melepas otot kaku.",
+                "Berdirilah dari kursi, jalan santai keliling ruanganmu selama 1 menit penuh.",
+                "Tuliskan 1 hal paling sepele yang membuatmu tersenyum kecil hari ini.",
+                "Pejamkan mata selama 1 menit penuh tanpa memikirkan tugas kuliah.",
+                "Cuci mukamu dengan air dingin segar untuk mengembalikan fokus dan menurunkan stres.",
+                "Dengarkan 1 lagu favoritmu tanpa melakukan aktivitas lain.",
+                "Katakan pada dirimu sendiri di dalam hati: 'Aku sudah melakukan yang terbaik hari ini.'"
+            };
+            int randIndex = (int) (Math.random() * challenges.length);
+            JOptionPane.showMessageDialog(this, challenges[randIndex], "Tantangan Mikro Hari Ini", JOptionPane.INFORMATION_MESSAGE);
         }));
         
-        content.add(gridActions, new AbsoluteConstraints(24, currentY, 344, 200));
-        currentY += 220;
+        // Menu 4: Kutipan Hari Ini (AKSI POP-UP INSTAN)
+        gridActions.add(buildQuickActionCard("Asset/aset-utama/dailyQuotes.png", "Kutipan Harian", () -> {
+            String[] quotes = {
+                "“Tidak apa-apa untuk merasa lelah. Langkah kecilmu hari ini tetaplah sebuah progres.”",
+                "“Ambil napas dalam-dalam. Ingat, harimu tidak ditentukan oleh satu momen buruk saja.”",
+                "“Kamu jauh lebih kuat, tangguh, dan berharga daripada yang kamu bayangkan hari ini.”",
+                "“Sama seperti kode yang eror, hidup juga butuh *debugging* lewat istirahat yang cukup.”",
+                "“Jangan membandingkan halaman ke-1 milikmu dengan halaman ke-20 milik orang lain.”",
+                "“Perasaan sedih atau kesal hari ini adalah valid. Terima, peluk, lalu lepaskan pelan-pelan.”",
+                "“Hari yang berat bukan berarti kehidupan yang berat. Besok ada kesempatan baru.”",
+                "“Kamu sudah bertahan sejauh ini melewati hari-hari yang kamu pikir tak sanggup kamu lewati.”",
+                "“Istirahat sejenak bukan berarti menyerah. Mesin paling canggih pun butuh dimatikan berkala.”",
+                "“Fokuslah pada apa yang bisa kamu kendalikan hari ini. Sisanya, biarkan waktu yang menjawab.”",
+                "“Dunia tidak menuntutmu untuk sempurna setiap hari. Menjadi dirimu yang tulus sudah cukup.”",
+                "“Kurangi *overthinking*, naikkan *self-loving*. Kamu sedang berproses menjadi versi terbaikmu.”"
+            };
+            int randIndex = (int) (Math.random() * quotes.length);
+            JOptionPane.showMessageDialog(this, quotes[randIndex], "Self Affirmation", JOptionPane.PLAIN_MESSAGE);
+        }));
+        
+        content.add(gridActions, new AbsoluteConstraints(24, currentY, 344, 260));
+        currentY += 280;
 
         // Atur dimensi scrollable secara dinamis berdasarkan kalkulasi akumulasi tinggi komponen di atas
         content.setPreferredSize(new Dimension(398, currentY + 20));
@@ -285,23 +341,40 @@ public class Home extends javax.swing.JFrame {
         recommendationsContent.repaint();
     }
 
-    private RoundedPanel buildQuickActionCard(String icon, String label, Runnable onClick) {
+    private RoundedPanel buildQuickActionCard(String iconPath, String label, Runnable onClick) {
         RoundedPanel card = new RoundedPanel(14, Color.WHITE, true);
         card.setLayout(new BorderLayout());
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(235, 235, 235), 1, true),
-                BorderFactory.createEmptyBorder(14, 10, 14, 10)
+                BorderFactory.createEmptyBorder(30, 10, 30, 10)
         ));
-        card.setPreferredSize(new Dimension(150, 85));
+        card.setPreferredSize(new Dimension(150, 95));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         JPanel inner = new JPanel();
         inner.setOpaque(false);
         inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
 
-        JLabel iconLabel = new JLabel(icon, SwingConstants.CENTER);
-        iconLabel.setFont(FontManager.getPoppins(22f));
+        // --- RENDER ICON GAMBAR DARI ASSET ---
+        JLabel iconLabel = new JLabel();
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
         iconLabel.setAlignmentX(0.5f);
+
+        try {
+            java.net.URL imgURL = getClass().getClassLoader().getResource(iconPath);
+            if (imgURL != null) {
+                ImageIcon originalIcon = new ImageIcon(imgURL);
+                // Skala 24x24 atau 28x28 agar pas di tengah card aslimu tanpa bikin gepeng
+                Image scaledImg = originalIcon.getImage().getScaledInstance(28, 28, Image.SCALE_SMOOTH);
+                iconLabel.setIcon(new ImageIcon(scaledImg));
+            } else {
+                iconLabel.setText("✨"); // Fallback jika path tidak ditemukan
+                iconLabel.setFont(FontManager.getPoppins(22f));
+            }
+        } catch (Exception e) {
+            iconLabel.setText("✨");
+            iconLabel.setFont(FontManager.getPoppins(22f));
+        }
 
         JLabel textLabel = new JLabel(label, SwingConstants.CENTER);
         textLabel.setFont(FontManager.getPoppins(12f).deriveFont(Font.BOLD));
@@ -312,6 +385,7 @@ public class Home extends javax.swing.JFrame {
         inner.add(iconLabel);
         inner.add(textLabel);
         card.add(inner, BorderLayout.CENTER);
+        
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -438,6 +512,178 @@ private void renderRecommendationsLocal(List<senandika.UILayer.ActivitySuggestio
     recommendationsContent.repaint();
 }
 
+private void generateDynamicSuggestions(int tingkatMood, JPanel container) {
+    container.removeAll();
+    
+    // Matriks data kegiatan dinamis: {Judul, Deskripsi Singkat di Home, Instruksi Detail di Dialog, Path Gambar, LANGKAH AKTIVITAS}
+    String[][] dataRekomendasi;
+    
+    switch (tingkatMood) {
+        case 1: // Sedih
+            dataRekomendasi = new String[][]{
+                {
+                    "Menulis Katarsis", 
+                    "Tumpahkan emosi sedihmu dalam jurnal tanpa filter.", 
+                    "Tulis apa pun yang membuat dadamu sesak selama beberapa menit tanpa berhenti untuk membaca ulang. Biarkan emosimu mengalir bebas.", 
+                    "Asset/halaman/activitySuggestion/katarsis.jpg",
+                    "Ambil posisi duduk yang tenang dan buka halaman jurnal baru di Senandika.;Tuliskan semua hal yang mengganjal di pikiranmu secara jujur tanpa perlu diedit atau dibaca ulang.;Biarkan air mata atau emosimu keluar mengalir bersama tulisanmu.;Setelah selesai, tarik napas dalam-dalam dan lepaskan beban tersebut perlahan."
+                },
+                {
+                    "Mendengarkan Musik", 
+                    "Dengarkan lagu instrumen penenang suasana hati.", 
+                    "Gunakan headphone, atur volume ke tingkat nyaman, pejamkan mata, dan dengarkan melodi instrumen akustik perlahan untuk menurunkan ketegangan.", 
+                    "Asset/halaman/activitySuggestion/musik_tenang.jpg",
+                    "Gunakan headphone atau earphone demi fokus yang lebih baik.;Pilihlah daftar putar lagu instrumen atau melodi akustik yang menenangkan.;Pejamkan mata dan pusatkan perhatian penuh pada ketukan serta alun musiknya.;Bernapaslah dengan teratur mengikuti ritme instrumen hingga detak jantung terasa lebih stabil."
+                },
+                {
+                    "Latihan Afirmasi", 
+                    "Tatap cermin dan ucapkan kalimat penerimaan diri.", 
+                    "Berdirilah di depan cermin, tatap matamu sendiri, tarik napas sedalam mungkin, dan ingatkan dirimu bahwa perasaanmu saat ini adalah valid.", 
+                    "Asset/halaman/activitySuggestion/afirmasi.jpg",
+                    "Berdiri atau duduk dengan tegak di depan cermin terdekat.;Tatap matamu sendiri dengan pandangan yang lembut dan penuh penerimaan.;Tarik napas sedalam mungkin dari hidung, lalu embuskan perlahan.;Ucapkan dengan lirih namun tegas: 'Aku menerima perasaanku hari ini, tidak apa-apa untuk merasa lelah. Besok akan lebih baik.';"
+                }
+            };
+            break;
+
+        case 2: // Murung
+            dataRekomendasi = new String[][]{
+                {
+                    "Jalan Santai 10 Menit", 
+                    "Hirup udara segar di luar ruangan tanpa gawai.", 
+                    "Tinggalkan laptop dan ponselmu di kamar sejenak. Berjalanlah keluar rumah untuk merasakan udara luar dan menyegarkan pikiran.", 
+                    "Asset/halaman/activitySuggestion/jalan_santai.jpg",
+                    "Simpan ponsel dan tinggalkan laptopmu di atas meja kamar.;Pakai alas kaki yang nyaman lalu melangkahlah keluar ruangan atau pekarangan rumah.;Berjalanlah dengan ritme santai selama kurang lebih 10 menit.;Perhatikan objek di sekitarmu seperti daun, langit, atau angin yang menyentuh kulit."
+                },
+                {
+                    "Mindful Tea Sipping", 
+                    "Seduh teh hangat kesukaanmu secara sadar.", 
+                    "Rasakan kehangatan cangkirnya di tanganmu, hirup aromanya, lalu sesap perlahan tanpa memikirkan tugas kuliah atau pekerjaan.", 
+                    "Asset/halaman/activitySuggestion/minum_teh.jpg",
+                    "Seduh secangkir teh hangat kesukaanmu (seperti chamomile atau melati).;Pegang cangkir dengan kedua tangan dan rasakan sensasi hangatnya mengalir ke telapak tangan.;Dekatkan cangkir ke wajah, lalu hirup aroma teh yang menenangkan dalam-dalam.;Sesap teh tersebut sedikit demi sedikit secara perlahan sambil menikmati rasanya tanpa distraksi."
+                },
+                {
+                    "Terapi Hijau Visual", 
+                    "Manjakan mata dengan memandang tanaman terdekat.", 
+                    "Cari jendela atau keluar ruangan, tatap tanaman atau pohon hijau terdekat selama beberapa menit untuk menyegarkan saraf visualmu.", 
+                    "Asset/halaman/activitySuggestion/terapi_hijau.jpg",
+                    "Posisikan dirimu berdiri di dekat jendela atau area terbuka luar ruangan.;Cari objek tanaman atau pepohonan hijau yang berada di sekitar pandanganmu.;Tatap dedaunan hijau tersebut secara fokus selama 3 hingga 5 menit.;Biarkan saraf matamu beristirahat dari paparan cahaya biru layar laptop atau komputer."
+                }
+            };
+            break;
+
+        case 3: // Marah
+            dataRekomendasi = new String[][]{
+                {
+                    "Peregangan Otot Leher", 
+                    "Lenturkan otot pundak dan leher yang tegang.", 
+                    "Tarik napas dalam-dalam untuk mengendurkan ketegangan emosional dan kaku pada saraf batin yang kaku akibat emosi.", 
+                    "Asset/halaman/activitySuggestion/peregangan.jpg",
+                    "Duduk tegak, rebahkan kepala ke pundak kanan perlahan, tahan 5 detik, lalu balas ke kiri.;Ulangi gerakan ini sebanyak 3 kali atau sampai ketegangan saraf batin mereda."
+                },
+                {
+                    "Hitung Mundur Fokus", 
+                    "Duduk rileks dan hitung mundur perlahan dari 100.", 
+                    "Pejamkan mata dan berfokuslah secara murni pada deret angka yang kamu bayangkan di dalam pikiranmu tersebut.", 
+                    "Asset/halaman/activitySuggestion/hitung_mundur.jpg",
+                    "Posisikan tubuh duduk tegak bersandar.;Lakukan hitung mundur secara perlahan dan lantang di dalam hati.;Fokuskan pikiranmu murni pada deret angka tersebut.;Jika pikiranmu teralihkan, kembalilah fokus pada hitungan mundurnya."
+                },
+                {
+                    "Sensasi Air Dingin", 
+                    "Teguk segelas air es secara perlahan.", 
+                    "Rasakan sensasi dingin yang mengalir menuruni tenggorokan secara fisik untuk meredakan amarah secara fisik.", 
+                    "Asset/halaman/activitySuggestion/air_dingin.jpg",
+                    "Teguk segelas air es secara perlahan.;Fokuskan pikiranmu pada rasa dingin tersebut.;Sesapi setiap tegukannya hingga rasa maramu perlahan memudar."
+                }
+            };
+            break;
+
+        case 4: // Senang
+            dataRekomendasi = new String[][]{
+                {
+                    "Jurnal Syukur Kecil", 
+                    "Catat 3 hal berharga yang terjadi hari ini.", 
+                    "Buka menu jurnal Senandika, abadikan momen sederhana yang membuatmu merasa beruntung atau tersenyum hari ini.", 
+                    "Asset/halaman/activitySuggestion/jurnal_syukur.jpg",
+                    "Buka lembar catatan atau fitur jurnal baru di dalam aplikasi Senandika.;Pikirkan kembali kejadian-kejadian yang kamu alami sejak bangun tidur pagi tadi.;Tuliskan 3 hal sederhana yang paling kamu syukuri (misal: cuaca cerah, berpapasan dengan teman, makan enak).;Baca kembali tulisan tersebut sambil tersenyum untuk mengunci rasa bahagiamu."
+                },
+                {
+                    "Apresiasi Sahabat", 
+                    "Kirim pesan teks terima kasih singkat ke teman dekat.", 
+                    "Sapa salah satu teman terbaikmu dan katakan terima kasih singkat karena dia telah menjadi teman bincang yang hebat.", 
+                    "Asset/halaman/activitySuggestion/pesan_teman.jpg",
+                    "Buka aplikasi perpesanan di ponsel pintarmu.;Pilih ruang obrolan salah satu sahabat atau teman terdekatmu.;Ketikkan pesan apresiasi tulus singkat (misal: 'Hey, makasih ya udah selalu seru diajak ngobrol selama ini!');Kirimkan pesan tersebut dan biarkan energi positifmu menular ke lingkaran pertemananmu."
+                },
+                {
+                    "Hobi Ekspresif 15m", 
+                    "Salurkan energi senangmu ke aktivitas hobi kreatif.", 
+                    "Gunakan waktu sejenak untuk melakukan hal yang paling kamu sukai, seperti mendengarkan lagu rock favorit atau menggambar sketsa.", 
+                    "Asset/halaman/activitySuggestion/hobi_senang.jpg",
+                    "Siapkan peralatan atau media hobi favoritmu (buku komik, kertas sketsa, atau instrumen musik).;Atur alarm atau pengingat waktu selama 15 menit ke depan.;Lakukan aktivitas hobi tersebut dengan penuh suka cita tanpa memikirkan beban tugas kuliah.;Rasakan dorongan semangat kreatif yang mengalir di dalam dirimu."
+                }
+            };
+            break;
+
+        case 5: // Ceria
+            dataRekomendasi = new String[][]{
+                {
+                    "Perencanaan Esok Seru", 
+                    "Susun target menarik yang ingin dieksekusi besok.", 
+                    "Manfaatkan momentum motivasi yang sedang melimpah ini untuk menulis daftar rencana seru atau tugas penting esok hari.", 
+                    "Asset/halaman/activitySuggestion/rencana_esok.jpg",
+                    "Ambil buku catatan kecil atau catatan digital di laptopmu.;Tuliskan 3 target utama paling menarik dan menantang yang ingin kamu taklukkan esok hari.;Breakdown target tersebut menjadi langkah kecil agar mudah dieksekusi.;Simpan daftarnya di tempat yang mudah terlihat saat kamu bangun tidur esok pagi."
+                },
+                {
+                    "Olahraga Kardio Ringan", 
+                    "Gunakan energi ceriamu untuk menggerakkan tubuh.", 
+                    "Lakukan stretching dinamis, lompat tali, atau gerakan workout ringan selama 10 menit agar hormon endorfin tetap lancar.", 
+                    "Asset/halaman/activitySuggestion/olahraga_ceria.jpg",
+                    "Ganti pakaianmu dengan pakaian olahraga yang longgar dan nyaman.;Putar lagu dengan ketukan bersemangat (*upbeat*) untuk memicu energi tubuh.;Lakukan pemanasan dinamis dilanjutkan gerakan kardio ringan (seperti jumping jack atau skipping) selama 10 menit.;Rasakan kesegaran fisik yang melimpah setelah keringat keluar."
+                },
+                {
+                    "Membaca Wawasan Baru", 
+                    "Buka bab baru dari buku pengembangan diri favoritmu.", 
+                    "Pikiranmu saat ini sedang berada dalam mode paling terbuka. Gunakan untuk menyerap halaman wawasan berharga dari buku bacaan.", 
+                    "Asset/halaman/activitySuggestion/baca_buku.jpg",
+                    "Ambil satu buku non-fiksi atau artikel pengembangan diri yang sedang ingin kamu pelajari.;Cari posisi duduk yang nyaman dengan pencahayaan ruangan yang cukup terang.;Bacalah 1 hingga 2 bab baru secara fokus dan saksama.;Catat kutipan atau poin berharga yang paling menginspirasimu ke dalam jurnal."
+                }
+            };
+            break;
+
+        default:
+            return;
+    }
+
+    // Loop pembuatan card
+    for (String[] recData : dataRekomendasi) {
+        senandika.Model.Recommendation recModel = new senandika.Model.Recommendation();
+        recModel.setTitle(recData[0]);
+        // Teks deskripsi di Home dipotong agar card tidak memanjang ke bawah
+        recModel.setDescription(recData[1]); 
+        recModel.setThumbnailUrl(recData[3]);
+        
+        RecommendationCard card = new RecommendationCard(recModel);
+        
+        // Listener aksi ketika tombol "Mulai" atau area Card diklik
+        card.setOnOpenDetail(() -> {
+            // Kita timpa deskripsi model sementara menggunakan instruksi detail (recData[2]) agar muncul lengkap di dialog
+            senandika.Model.Recommendation detailModel = new senandika.Model.Recommendation();
+            detailModel.setTitle(recData[0]);
+            detailModel.setDescription(recData[2]); 
+            // Ambil langkah-langkah asli dari kolom matriks baru (Pemisah ;)
+            detailModel.setSteps(recData[4].split(";")); 
+            detailModel.setThumbnailUrl(recData[3]);
+            
+            // Panggil dialog detail aslimu
+            RecommendationDetailDialog dialog = new RecommendationDetailDialog(this, detailModel);
+            dialog.setVisible(true);
+        });
+
+        container.add(card);
+        // Jarak 12px antar kartu (Padding Kanan otomatis)
+        container.add(Box.createHorizontalStrut(12)); 
+    }
+}
+
     // -----------------------------------------------------------------
     // Async Data Load Callbacks
     // -----------------------------------------------------------------
@@ -473,25 +719,34 @@ private void renderRecommendationsLocal(List<senandika.UILayer.ActivitySuggestio
     // 2. Ambil Data Mood Terakhir (Menggunakan data lokal List MoodService)
     try {
         List<Mood> moodHistory = moodService.getMoodHistory();
+        
         if (moodHistory != null && !moodHistory.isEmpty()) {
-            Mood latestMood = moodHistory.get(moodHistory.size() - 1);
+            moodHistory.sort((m1, m2) -> Integer.compare(m2.getId(), m1.getId()));
+            
+            Mood latestMood = moodHistory.get(0); 
+            
             renderMoodSummaryLocal(latestMood);
             dailyInsightCard.updateByMood(latestMood.getTingkatMood());
+            
+            // =====================================================================
+            // PERBAIKAN UTAMA: Hubungkan pemicu pengisian card dinamis di sini!
+            // =====================================================================
+            generateDynamicSuggestions(latestMood.getTingkatMood(), recommendationsContent);
+            
         } else {
             renderMoodSummaryLocal(null);
             dailyInsightCard.updateByMood(4);
+            
+            // Fallback jika database kosong (Tingkat mood 4 = Senang)
+            generateDynamicSuggestions(4, recommendationsContent);
         }
+
+        // Paksa UI kontainer untuk merender ulang isi card baru ke layar laptopmu
+        recommendationsContent.revalidate();
+        recommendationsContent.repaint();
+
     } catch (Exception e) {
         renderMoodSummaryError();
-    }
-
-    // 3. Ambil Rekomendasi Aktivitas (Menggunakan List dari RecomendationService)
-    try {
-        // Catatan: sesuaikan penulisan nama kelas jika typo (RecomendationService dengan satu 'c')
-        List<senandika.UILayer.ActivitySuggestion> suggestions = recommendationService.getRecommendation();
-        renderRecommendationsLocal(suggestions);
-    } catch (Exception e) {
-        renderRecommendationsError();
     }
 
     // 4. Ambil Streak Journal (Sinkronus - mengembalikan int)
@@ -556,7 +811,7 @@ private void renderRecommendationsLocal(List<senandika.UILayer.ActivitySuggestio
         navbar_panel.add(profile_nav, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 30, 60, 60));
 
         navbar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Asset/component/navbar/nav-home.png"))); // NOI18N
-        navbar_panel.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        navbar_panel.add(navbar, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -8, -1, 110));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
