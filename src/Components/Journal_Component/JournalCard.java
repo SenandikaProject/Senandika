@@ -25,7 +25,6 @@ public class JournalCard extends JPanel {
     private JFrame parentFrame;
     
     private JournalSearchBar searchBar;
-    private JournalFilterBar filterBar;
     private JournalStreakCard streakCard;
     private JournalService service;
     
@@ -160,10 +159,8 @@ public class JournalCard extends JPanel {
                 controlWrapper.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                 searchBar = new JournalSearchBar();
-                filterBar = new JournalFilterBar();
 
                 controlWrapper.add(searchBar, BorderLayout.CENTER);
-                controlWrapper.add(filterBar, BorderLayout.EAST);
 
                 contentPanel.add(controlWrapper);
                 contentPanel.add(Box.createVerticalStrut(20));
@@ -201,48 +198,6 @@ public class JournalCard extends JPanel {
                     }
                     listJurnalContainer.revalidate();
                     listJurnalContainer.repaint();
-                });
-
-                // Logika Filter Dropdown
-                filterBar.addFilterListener(e -> {
-                    String selectedFilter = filterBar.getSelectedFilter();
-
-                    int konfirmasi = JOptionPane.showConfirmDialog(
-                        this, 
-                        "Apakah Anda ingin menerapkan filter \"" + selectedFilter + "\"?", 
-                        "Konfirmasi Filter", 
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                    );
-
-                    if (konfirmasi == JOptionPane.YES_OPTION) {
-                        try {
-                            List<JournalData> filteredJournals = service.getFilteredJournals(selectedFilter, "");
-                            filteredJournals.sort((j1, j2) -> Integer.compare(j2.getId(), j1.getId()));
-
-                            masterJournals = filteredJournals;
-                            listJurnalContainer.removeAll();
-
-                            if (filteredJournals.isEmpty()) {
-                                JLabel lblEmpty = new JLabel("Tidak ada jurnal di periode ini.");
-                                lblEmpty.setFont(new Font("Poppins", Font.ITALIC, 14));
-                                lblEmpty.setForeground(Color.GRAY);
-                                lblEmpty.setAlignmentX(Component.CENTER_ALIGNMENT);
-                                listJurnalContainer.add(lblEmpty);
-                            } else {
-                                renderJurnalList(filteredJournals);
-                            }
-
-                            listJurnalContainer.revalidate();
-                            listJurnalContainer.repaint();
-                            contentPanel.revalidate();
-                            contentPanel.repaint();
-
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            JOptionPane.showMessageDialog(this, "Gagal memfilter data: " + ex.getMessage());
-                        }
-                    }
                 });
 
                 renderJurnalList(masterJournals);
@@ -478,9 +433,18 @@ public class JournalCard extends JPanel {
     private void setupCardActions(JournalItemCard card) {
         card.getBtnDetail().addActionListener(e -> {
             try {
-                if(parentFrame != null) parentFrame.dispose();
+                // 1. Ambil ID jurnal dari card yang sedang diklik oleh user
+                int idTerpilih = card.getJournalId();
+
+                // 2. Buka frame DetailJournal dengan melempar parameter ID-nya
+                DetailJournal frameDetail = new DetailJournal(idTerpilih);
+                frameDetail.setVisible(true);
+                // AKSI CLOSE: Menghancurkan/menutup frame utama lamamu
+            if (parentFrame != null) {
+                parentFrame.dispose();
+            }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Gagal membuka rincian: " + ex.getMessage());
             }
         });
 
@@ -493,6 +457,10 @@ public class JournalCard extends JPanel {
 
             EditJournal frameEdit = new EditJournal(idYgDipilih, this);
             frameEdit.setVisible(true);
+            // AKSI CLOSE: Menghancurkan/menutup frame utama lamamu
+            if (parentFrame != null) {
+                parentFrame.dispose();
+            }
         });
         // =======================================================
 
