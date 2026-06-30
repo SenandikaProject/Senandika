@@ -1,6 +1,7 @@
 package senandika.UILayer;
 
 import Components.Journal_Component.EditJournalCard;
+import Components.Journal_Component.JournalCard;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,37 +13,33 @@ import senandika.Model.JournalData;
 import senandika.ServiceLayer.JournalService;
 
 
+
 public class EditJournal extends javax.swing.JFrame {
-    
-    private File selectedFile;
-    private EditJournalCard journalCard;
-    private int journalId;
-    
-    public EditJournal(int journalId) {
-        this.journalId = journalId;
+    private JournalService service;
+    private EditJournalCard editJournalCard;
+    private JournalCard mainJournalPage; // Menyimpan referensi halaman utama jurnal
+
+    public EditJournal(int journalId, JournalCard mainJournalPage) {
+        this.service = new JournalService();
+        this.mainJournalPage = mainJournalPage;
+        
         initComponents();
         setLocationRelativeTo(null);
         initUI();
-        loadJournal();
-    }
-
-    private EditJournal() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
+        // Muat data lama ke form & aktifkan listener tombol
+        loadJournalDataToForm(journalId);
+        setupActions();
     }
     
     private void initUI() {
-        // 1. Bersihkan aturan konfigurasi ScrollPane pembungkus
         jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        jScrollPane1.setBorder(null); // Menghilangkan border ganda bawaan swing agar bersih
+        jScrollPane1.setBorder(null); 
 
-        // 2. Atur panel internal (content) agar elastis mengikuti GridBagLayout
         content.setBackground(new Color(246, 255, 248));
         content.setLayout(new GridBagLayout());
         content.removeAll();
-
-        // PENTING: JANGAN pakai setPreferredSize() yang mengunci tinggi komponen kaku!
-        // Kita biarkan dimensi lebarnya pas 398, dan tingginya otomatis berdasar isi komponen (PreferredSize bawaan)
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -51,97 +48,87 @@ public class EditJournal extends javax.swing.JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.NORTH; // Menjaga konten selalu rapi mulai dari atas layar
+        gbc.anchor = GridBagConstraints.NORTH; 
 
-        // 3. Pasang Card Komponen Modern Baru
-        journalCard = new EditJournalCard(this);
-        content.add(journalCard, gbc);
-        
-        journalCard.getBtnSave()
-        .addActionListener(e -> {
-            updateJournal();
-        });
+        editJournalCard = new EditJournalCard(this);
+        content.add(editJournalCard, gbc);
 
-        journalCard.getBtnCancel()
-        .addActionListener(e -> {
-            Journal page =
-                    new Journal();
-
-            page.setVisible(true);
-
-            dispose();
-        });
-
-        // 4. Sinkronisasikan ulang rendering engine Java Swing
         content.revalidate();
         content.repaint();
         this.pack();
     }
     
-    private void loadJournal() {
+    private void loadJournalDataToForm(int id) {
         try {
-
-            JournalService service =
-                    new JournalService();
-
-            JournalData data =
-                    service.getJournalById(
-                            journalId
-                    );
-
-            journalCard.setJournalData(
-                    data
-            );
-
+            JournalData data = service.getJournalById(id); 
+            if (data != null) {
+                editJournalCard.setJournalData(data);
+            } else {
+                JOptionPane.showMessageDialog(this, "Data jurnal tidak ditemukan!", "Error", JOptionPane.ERROR_MESSAGE);
+                dispose();
+            }
         } catch (Exception e) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    e.getMessage()
-            );
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Gagal mengambil data: " + e.getMessage());
         }
     }
     
-    private void updateJournal() {
-        try {
-
-            String judul =
-                    journalCard
-                            .getTxtJudul()
-                            .getText();
-
-            String isi =
-                    journalCard
-                            .getTxtIsi()
-                            .getText();
-
-            JournalService service =
-                    new JournalService();
-
-            service.updateJournal(
-                    journalId,
-                    judul,
-                    isi
-            );
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Jurnal berhasil diperbarui"
-            );
-
-            new Journal().setVisible(true);
-
+    private void setupActions() {
+        // Tombol Batal -> Kembali ke halaman jurnal utama tanpa mengubah apapun
+        editJournalCard.getBtnCancel().addActionListener(e -> {
+            if (mainJournalPage != null) {
+                mainJournalPage.loadData(); // Memastikan UI utama segar kembali
+            }
             dispose();
+        });
+        
+        // Tombol Simpan Perubahan -> Eksekusi update database
+        editJournalCard.getBtnSave().addActionListener(e -> {
+            String judulBaru = editJournalCard.getTxtJudul().getText().trim();
+            String isiBaru = editJournalCard.getTxtIsi().getText().trim();
+            File fileFotoBaru = editJournalCard.getSelectedFotoFile();
+            String fotoLamaUrl = editJournalCard.getOldFotoUrl();
+            int idJurnal = editJournalCard.getJournalId();
 
-        } catch (Exception e) {
+            // Validasi input kosong
+            if (judulBaru.isEmpty() || isiBaru.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Judul dan Isi jurnal tidak boleh kosong!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    e.getMessage()
-            );
-        }
-    }
-    
+            try {
+                // Tentukan path foto yang akan disimpan ke database
+                String finalFotoPath = fotoLamaUrl; 
+                
+                // Jika user mengunggah foto baru, proses file tersebut
+                if (fileFotoBaru != null) {
+                    finalFotoPath = fileFotoBaru.getAbsolutePath(); 
+                    // Catatan: Jika ServiceLayer Anda memproses upload/copy file otomatis, 
+                    // Anda bisa melemparkan objek 'fileFotoBaru' langsung ke method service.
+                }
+
+                // Panggil Service Layer untuk melakukan query UPDATE ke database
+                boolean success = service.updateJournal(idJurnal, judulBaru, isiBaru, finalFotoPath);
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Jurnal berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+                    
+                    // REFRESH OTOMATIS: Panggil loadData() halaman utama agar data terbaru langsung tampil
+                    if (mainJournalPage != null) {
+                        mainJournalPage.loadData();
+                    }
+                    
+                    dispose(); // Tutup form edit
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal memperbarui jurnal di database.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan sistem: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+    });
+}
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -179,7 +166,7 @@ public class EditJournal extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new EditJournal().setVisible(true);
+                new EditJournal(1,null).setVisible(true);
             }
         });
     }

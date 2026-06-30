@@ -11,7 +11,7 @@ import senandika.Model.JournalData;
 
 public class JournalService {
 
-    private final String BASE_URL = "http://localhost:5000/api/journals";
+    public final String BASE_URL = "http://localhost:5000/api/journals";
 
     public String createJournal(String judul, String isi, File imageFile) throws IOException {
         String boundary = Long.toHexString(System.currentTimeMillis());
@@ -211,18 +211,31 @@ public class JournalService {
     }
     
     public void deleteJournal(int id) throws Exception {
-        URL url = new URL(BASE_URL + "/" + id);
+ 
+           URL url = new URL(BASE_URL + "/" + id);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("DELETE");
         conn.setRequestProperty("Authorization", "Bearer " + Session.TOKEN);
 
         int code = conn.getResponseCode();
         if(code != 200){
-            throw new RuntimeException("Gagal menghapus jurnal");
+            // Ambil pesan error dari server jika ada
+            InputStream errorStream = conn.getErrorStream();
+            if (errorStream != null) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(errorStream));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while((line = br.readLine()) != null){
+                    response.append(line);
+                }
+                System.out.println("Error dari server: " + response.toString()); // Cek output di console NetBeans
+            }
+            // Tampilkan kode statusnya di pesan error
+            throw new RuntimeException("Gagal menghapus jurnal. HTTP Status: " + code);
         }
     }
     
-    public void updateJournal(int id, String judul, String isi) throws Exception {
+    public boolean updateJournal(int id, String judul, String isi, String fotoPath) throws Exception {
         URL url = new URL(BASE_URL + "/" + id);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("PUT");
@@ -233,13 +246,18 @@ public class JournalService {
         JsonObject body = new JsonObject();
         body.addProperty("judul", judul);
         body.addProperty("isi", isi);
+        body.addProperty("foto", fotoPath); // Menambahkan parameter string foto/gambar
 
-        try(OutputStream os = conn.getOutputStream()){
-            os.write(body.toString().getBytes());
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(body.toString().getBytes("UTF-8"));
         }
 
-        if(conn.getResponseCode() != 200){
-            throw new RuntimeException("Gagal update jurnal");
+        int responseCode = conn.getResponseCode();
+        if (responseCode == 200 || responseCode == 204) {
+            return true; // Mengembalikan true jika update sukses
+        } else {
+            throw new RuntimeException("Gagal update jurnal, server merespon dengan kode: " + responseCode);
         }
     }
+    
 }

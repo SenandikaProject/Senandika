@@ -11,6 +11,8 @@ public class Journal extends javax.swing.JFrame {
     private JournalCard journalCard;
 
     public Journal() {
+        
+            
 
         initComponents();
 
