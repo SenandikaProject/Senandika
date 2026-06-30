@@ -1,48 +1,47 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package senandika.UILayer;
 
-import Components.Journal_Component.CreateJournalCard;
+import Components.Journal_Component.DetailJournalCard;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
-import java.io.File;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import senandika.Model.JournalData;
 import senandika.ServiceLayer.JournalService;
 
-/**
- *
- * @author SAHABAT-IT
- */
 public class DetailJournal extends javax.swing.JFrame {
-    private File selectedFile;
-    public DetailJournal() {
+    private int journalId;
+    private JournalService journalService;
+    private DetailJournalCard detailJournalCard;
+
+    public DetailJournal(int journalId) {
+        setUndecorated(true); 
+
+        this.journalId = journalId;
+        this.journalService = new JournalService();
+        
         initComponents();
+        setBackground(new Color(0, 0, 0, 0)); // Membuat background frame transparan penuh
         setLocationRelativeTo(null);
         initUI();
+        this.pack();
+        this.setSize(394, 720);
+        fetchDetailData();
     }
     
     private void initUI() {
-        // 1. Bersihkan aturan konfigurasi ScrollPane pembungkus
+        // 1. Konfigurasi JScrollPane agar bersih dan tidak bocor secara horizontal
         jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        jScrollPane1.setBorder(null); // Menghilangkan border ganda bawaan swing agar bersih
+        jScrollPane1.setBorder(null);
+        jScrollPane1.getViewport().setBackground(new Color(246, 255, 248));
 
-        // 2. Atur panel internal (content) agar elastis mengikuti GridBagLayout
+        // 2. Setup Container Panel utama
         content.setBackground(new Color(246, 255, 248));
         content.setLayout(new GridBagLayout());
         content.removeAll();
-
-        // PENTING: JANGAN pakai setPreferredSize() yang mengunci tinggi komponen kaku!
-        // Kita biarkan dimensi lebarnya pas 398, dan tingginya otomatis berdasar isi komponen (PreferredSize bawaan)
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -51,16 +50,56 @@ public class DetailJournal extends javax.swing.JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.NORTH; // Menjaga konten selalu rapi mulai dari atas layar
+        gbc.anchor = GridBagConstraints.NORTH; 
 
-        // 3. Pasang Card Komponen Modern Baru
-        CreateJournalCard journalCard = new CreateJournalCard(this);
-        content.add(journalCard, gbc);
-
-        // 4. Sinkronisasikan ulang rendering engine Java Swing
+        // 3. Pasang Custom Card Panel
+        detailJournalCard = new DetailJournalCard();
+        
+        // Pasangkan Event Listener tombol kembali agar menutup Frame Utama saat ini
+        detailJournalCard.getBtnBack().addActionListener(e -> dispose());
+        
+        content.add(detailJournalCard, gbc);
+        
+        detailJournalCard.getBtnBack().addActionListener(e -> {
+            Journal journal = new Journal();
+                journal.setVisible(true);
+            dispose();
+        });
+        // 4. Sinkronisasikan Rendering Engine Swing
         content.revalidate();
         content.repaint();
         this.pack();
+        this.setSize(394, 720); // Kunci dimensi frame agar konsisten seperti mockup rekomendasi
+    }
+    
+    private void fetchDetailData() {
+        try {
+            JournalData journal = journalService.getJournalById(journalId);
+            
+            if (journal != null) {
+                String formattedDate = (journal.getCreatedAt() != null) ? journal.getCreatedAt() : journal.getTanggal();
+                
+                // Ambil string path gambar dari model backend-mu (misal: journal.getImagePath() / journal.getAttachment())
+                // Kirimkan null atau "" jika data gambar kosong untuk memicu fallback state.
+                String pathGambar = journal.getImagePath(); 
+
+                // Menyuntikkan data mentah terupdate ke UI Card Komponen
+                detailJournalCard.setJournalData(
+                    journal.getJudul(),
+                    formattedDate,
+                    journal.getIsi(),
+                    pathGambar
+                );
+                
+                this.revalidate();
+                this.repaint();
+            } else {
+                JOptionPane.showMessageDialog(this, "Data jurnal tidak ditemukan.", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal mengambil rincian data: " + e.getMessage(), "Koneksi Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -126,7 +165,7 @@ public class DetailJournal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DetailJournal().setVisible(true);
+                new DetailJournal(1).setVisible(true);
             }
         });
     }

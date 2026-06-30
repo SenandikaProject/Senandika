@@ -76,10 +76,12 @@ public class EditJournal extends javax.swing.JFrame {
     private void setupActions() {
         // Tombol Batal -> Kembali ke halaman jurnal utama tanpa mengubah apapun
         editJournalCard.getBtnCancel().addActionListener(e -> {
-            if (mainJournalPage != null) {
-                mainJournalPage.loadData(); // Memastikan UI utama segar kembali
-            }
-            dispose();
+            // Instansiasi ulang window Journal utama agar data ter-refresh bersih
+            senandika.UILayer.Journal jurnalWindow = new senandika.UILayer.Journal();
+            jurnalWindow.setVisible(true);
+            
+            // Tutup & hancurkan frame edit saat ini
+            dispose(); 
         });
         
         // Tombol Simpan Perubahan -> Eksekusi update database
@@ -113,12 +115,11 @@ public class EditJournal extends javax.swing.JFrame {
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Jurnal berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
                     
-                    // REFRESH OTOMATIS: Panggil loadData() halaman utama agar data terbaru langsung tampil
-                    if (mainJournalPage != null) {
-                        mainJournalPage.loadData();
-                    }
-                    
-                    dispose(); // Tutup form edit
+                    senandika.UILayer.Journal jurnalWindow = new senandika.UILayer.Journal();
+                    jurnalWindow.setVisible(true);
+
+                    // Tutup & hancurkan frame edit saat ini
+                    dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Gagal memperbarui jurnal di database.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
